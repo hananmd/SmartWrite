@@ -1,0 +1,20 @@
+# Ignore environment files containing secrets
+.env
+.env.*
+.env.local
+.env.development
+.env.test
+.env.bak
+.env.*.bak
+
+# Common editor / OS files
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Python
+__pycache__/
+*.py[cod]
+
+# Node
+node_modules/
