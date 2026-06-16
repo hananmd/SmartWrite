@@ -1,0 +1,14 @@
+# --- Web framework ---
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+httpx==0.28.1              # ASGI test client + outbound HTTP (Groq/HF) later
+
+# --- Settings / config ---
+pydantic-settings==2.7.1
+
+# --- Database (async SQLAlchemy + drivers + migrations) ---
+SQLAlchemy[asyncio]==2.0.36
+aiosqlite==0.20.0          # local dev driver  (sqlite+aiosqlite)
+asyncpg==0.31.0            # production driver  (postgresql+asyncpg); 0.31 ships cp314 wheels
+alembic==1.14.0
+greenlet==3.5.1           # required by SQLAlchemy async; 3.5.1 ships cp314 wheels

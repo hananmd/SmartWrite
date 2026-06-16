@@ -7,6 +7,9 @@
 .env.bak
 .env.*.bak
 
+# ...but DO commit the placeholder template
+!.env.example
+
 # Common editor / OS files
 .vscode/
 .DS_Store
@@ -15,6 +18,12 @@ Thumbs.db
 # Python
 __pycache__/
 *.py[cod]
+.venv/
+venv/
+
+# Local SQLite database (recreated via `alembic upgrade head`)
+*.db
+*.sqlite3
 
 # Node
 node_modules/

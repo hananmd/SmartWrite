@@ -9,29 +9,33 @@
 
 ## Done
 
-No completed items yet — update this as work lands.
+- 2026-06-16 — Backend skeleton landed (PROGRESS item 1): `backend/` package
+  with `config.py` (pydantic-settings, reads root `.env`), `database.py`
+  (async SQLAlchemy engine/session/Base from `DATABASE_URL`), and `main.py`
+  (FastAPI app + `/health` endpoint that pings the DB). Alembic wired for
+  async (`backend/alembic/env.py` pulls the URL from settings); empty baseline
+  revision `d5e215216942` applied. `requirements.txt` + `.env.example` added.
+  Smoke-tested: app imports, `alembic upgrade head` works, `GET /health` -> 200.
 
 ## Next up (in order)
 
-1. [ ] Backend skeleton: FastAPI app, SQLAlchemy async setup against local
-   SQLite, Alembic initialized.
-2. [ ] User model + JWT auth: `/api/register`, `/api/login`, PBKDF2-SHA256
+1. [ ] User model + JWT auth: `/api/register`, `/api/login`, PBKDF2-SHA256
    hashing.
-3. [ ] `/api/correct` (protected): Groq integration, tone detection +
+2. [ ] `/api/correct` (protected): Groq integration, tone detection +
    rewrite + grammar correction, graceful handling of Groq downtime/rate
    limits.
-4. [ ] `CorrectionHistory` model with encrypted `original_text` /
+3. [ ] `CorrectionHistory` model with encrypted `original_text` /
    `corrected_text` (Fernet, key from `HISTORY_ENCRYPTION_KEY`); save on
    every `/api/correct` call.
-5. [ ] `/api/history` + basic analytics endpoint (most-used tone,
+4. [ ] `/api/history` + basic analytics endpoint (most-used tone,
    correction frequency).
-6. [ ] PWA frontend: Bootstrap UI, installable manifest + service worker,
+5. [ ] PWA frontend: Bootstrap UI, installable manifest + service worker,
    wired to the backend.
-7. [ ] Chrome extension: MV3 manifest, selection-capture content script,
+6. [ ] Chrome extension: MV3 manifest, selection-capture content script,
    floating action button, popup, wired to the backend.
-8. [ ] Deploy: Render web service + Render free Postgres, env vars set,
+7. [ ] Deploy: Render web service + Render free Postgres, env vars set,
    CORS configured for the PWA and extension origins.
-9. [ ] Polish: README with setup instructions + screenshots, a basic
+8. [ ] Polish: README with setup instructions + screenshots, a basic
    pytest suite, final error-handling pass.
 
 ## Known issues / operational reminders
@@ -44,6 +48,13 @@ No completed items yet — update this as work lands.
   step 3 above, not optional.
 - HF fallback model: re-verify it's live on huggingface.co before relying
   on it — don't assume a model that worked last month still does.
+- The current `HISTORY_ENCRYPTION_KEY` in `.env` is a 64-char hex string, but
+  Fernet expects a base64 key from `Fernet.generate_key()`. Regenerate it the
+  correct way before wiring up encryption (item 3, the `CorrectionHistory`
+  work), or Fernet will reject it.
+- Local env runs Python 3.14: a few packages have no prebuilt wheels at older
+  pins and try to compile from C source (needs MSVC, which isn't installed).
+  Pin versions that ship cp314 wheels (e.g. greenlet>=3.5.1, asyncpg>=0.31.0).
 
 ## Decisions log
 
