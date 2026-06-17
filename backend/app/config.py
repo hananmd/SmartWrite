@@ -38,7 +38,7 @@ class Settings(BaseSettings):
     history_encryption_key: str = ""
 
     model_config = SettingsConfigDict(
-        env_file=PROJECT_ROOT / ".env",
+        env_file=str(PROJECT_ROOT / ".env"),
         env_file_encoding="utf-8",
         case_sensitive=False,
         extra="ignore",  # tolerate unrelated vars in .env

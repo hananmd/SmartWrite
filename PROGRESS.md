@@ -28,16 +28,29 @@
   Smoke-tested: register 201, duplicate 409, login OK 200, login bad password
   401, health 200.
 
+- 2026-06-17 — Groq `/api/correct` endpoint (PROGRESS item 3):
+  `backend/app/groq_client.py` — async httpx calls to Groq's OpenAI-compatible
+  endpoint, exponential backoff (1s/2s/4s) on 429 and 5xx, friendly
+  `GroqUnavailableError` on all failure paths (never surfaces raw stack traces),
+  JSON-mode response parsing with key validation, empty-key guard.
+  `backend/app/schemas/correct.py` — `CorrectRequest` (text 1–5000 chars,
+  optional tone field validated against VALID_TONES) and `CorrectResponse`.
+  `backend/app/routers/correct.py` — `POST /api/correct` (JWT-protected via
+  `get_current_user`; 503 on Groq issues). Router registered in `main.py`.
+  No new pip packages required (httpx was already in requirements.txt).
+  Smoke-tested: formal-tone correction OK, no-tone (AI picks friendly) OK,
+  unauthenticated 403, invalid tone 422.
+
 ## Next up (in order)
 
 1. [x] User model + JWT auth: `/api/register`, `/api/login`, PBKDF2-SHA256
    hashing. ✓ Done 2026-06-17
-2. [ ] `/api/correct` (protected): Groq integration, tone detection +
+2. [x] `/api/correct` (protected): Groq integration, tone detection +
    rewrite + grammar correction, graceful handling of Groq downtime/rate
-   limits. — **Next up**
+   limits. ✓ Done 2026-06-17
 3. [ ] `CorrectionHistory` model with encrypted `original_text` /
    `corrected_text` (Fernet, key from `HISTORY_ENCRYPTION_KEY`); save on
-   every `/api/correct` call.
+   every `/api/correct` call. — **Next up**
 4. [ ] `/api/history` + basic analytics endpoint (most-used tone,
    correction frequency).
 5. [ ] PWA frontend: Bootstrap UI, installable manifest + service worker,
