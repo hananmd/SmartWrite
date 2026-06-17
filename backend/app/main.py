@@ -3,10 +3,6 @@
 Run locally from the project root:
 
     uvicorn backend.app.main:app --reload
-
-This is the skeleton (PROGRESS.md item 1): app instance, lifespan-managed DB
-engine, and a health endpoint. Auth, correction, and history routers are added
-in later milestones.
 """
 
 from contextlib import asynccontextmanager
@@ -16,6 +12,7 @@ from sqlalchemy import text
 
 from backend.app.config import get_settings
 from backend.app.database import engine
+from backend.app.routers import auth as auth_router
 
 settings = get_settings()
 
@@ -37,6 +34,8 @@ app = FastAPI(
     version="0.1.0",
     lifespan=lifespan,
 )
+
+app.include_router(auth_router.router)
 
 
 @app.get("/health", tags=["meta"])

@@ -17,13 +17,24 @@
   revision `d5e215216942` applied. `requirements.txt` + `.env.example` added.
   Smoke-tested: app imports, `alembic upgrade head` works, `GET /health` -> 200.
 
+- 2026-06-17 — User model + JWT auth (PROGRESS item 2): `User` ORM model
+  (`backend/app/models/user.py`); Pydantic schemas in `backend/app/schemas/auth.py`;
+  `backend/app/auth.py` — PBKDF2-SHA256 hashing via stdlib `hashlib.pbkdf2_hmac`
+  (avoids passlib/Python 3.13+ compat issues), PyJWT HS256 token mint, and
+  `get_current_user` Bearer dependency; `backend/app/routers/auth.py` —
+  `POST /api/register` (201, issues token) and `POST /api/login` (200, issues
+  token). Alembic revision `fc7642e3fc7a` (add_users_table) applied. Added
+  `PyJWT==2.10.1` + `email-validator==2.2.0` to `requirements.txt`.
+  Smoke-tested: register 201, duplicate 409, login OK 200, login bad password
+  401, health 200.
+
 ## Next up (in order)
 
-1. [ ] User model + JWT auth: `/api/register`, `/api/login`, PBKDF2-SHA256
-   hashing.
+1. [x] User model + JWT auth: `/api/register`, `/api/login`, PBKDF2-SHA256
+   hashing. ✓ Done 2026-06-17
 2. [ ] `/api/correct` (protected): Groq integration, tone detection +
    rewrite + grammar correction, graceful handling of Groq downtime/rate
-   limits.
+   limits. — **Next up**
 3. [ ] `CorrectionHistory` model with encrypted `original_text` /
    `corrected_text` (Fernet, key from `HISTORY_ENCRYPTION_KEY`); save on
    every `/api/correct` call.
