@@ -38,3 +38,4 @@ class CorrectResponse(BaseModel):
     detected_tone: str
     applied_tone: str
     changes_summary: str
+    warning: str | None = None
