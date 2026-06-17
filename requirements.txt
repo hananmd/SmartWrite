@@ -10,6 +10,9 @@ email-validator==2.2.0     # required by Pydantic's EmailStr
 # --- Auth ---
 PyJWT==2.10.1              # JWT creation/verification (pure Python, works on cp314)
 
+# --- Encryption (field-level Fernet for correction history) ---
+cryptography==44.0.2
+
 # --- Database (async SQLAlchemy + drivers + migrations) ---
 SQLAlchemy[asyncio]==2.0.36
 aiosqlite==0.20.0          # local dev driver  (sqlite+aiosqlite)
