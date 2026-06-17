@@ -58,11 +58,11 @@ async def correct(
     try:
         db.add(record)
         await db.commit()
-    except SQLAlchemyError as exc:
+    except SQLAlchemyError:
         # If database fails, we don't want to crash the whole request
         # since the correction itself succeeded.
         await db.rollback()
-        logger.error(f"Failed to save correction history: {exc}")
+        logger.error("Failed to save correction history")
         warning = "Correction succeeded, but history could not be saved."
 
     return CorrectResponse(**result, warning=warning)
