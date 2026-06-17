@@ -143,16 +143,31 @@ async def correct_text(text: str, tone: str | None = None) -> dict[str, Any]:
                 )
 
             # Happy path — parse the model's JSON reply.
-            data = response.json()
-            raw_content: str = data["choices"][0]["message"]["content"]
+            try:
+                data = response.json()
+                raw_content = data["choices"][0]["message"]["content"]
+                if not isinstance(raw_content, str):
+                    raise TypeError("content must be a string")
+            except (ValueError, KeyError, IndexError, TypeError) as exc:
+                logger.error("Groq response payload shape invalid")
+                raise GroqUnavailableError(
+                    "The AI returned an unexpected response. Please try again."
+                ) from exc
 
             try:
-                result: dict[str, Any] = json.loads(raw_content)
-            except json.JSONDecodeError:
+                parsed = json.loads(raw_content)
+            except json.JSONDecodeError as exc:
                 logger.error("Groq model returned non-JSON content (content omitted for privacy)")
                 raise GroqUnavailableError(
                     "The AI returned an unexpected response. Please try again."
+                ) from exc
+
+            if not isinstance(parsed, dict):
+                logger.error("Groq JSON content is not an object")
+                raise GroqUnavailableError(
+                    "The AI returned an unexpected response. Please try again."
                 )
+            result: dict[str, Any] = parsed
 
             required_keys = {"detected_tone", "applied_tone", "corrected_text", "changes_summary"}
             missing = required_keys - result.keys()
@@ -161,7 +176,6 @@ async def correct_text(text: str, tone: str | None = None) -> dict[str, Any]:
                 raise GroqUnavailableError(
                     "The AI returned an incomplete response. Please try again."
                 )
-
             return result
 
     # Unreachable — every code path inside the loop either returns or raises.
