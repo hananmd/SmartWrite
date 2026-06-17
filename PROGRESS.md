@@ -92,6 +92,8 @@
 - Local env runs Python 3.14: a few packages have no prebuilt wheels at older
   pins and try to compile from C source (needs MSVC, which isn't installed).
   Pin versions that ship cp314 wheels (e.g. greenlet>=3.5.1, asyncpg>=0.31.0).
+- **Environment Notice**: `cryptography>=48.0.0` requires **Python 3.9+** and **OpenSSL 3.0+**.
+  Ensure deployment environments (e.g., Render, CI) meet these minimums.
 
 ## Decisions log
 
