@@ -49,7 +49,15 @@ async def correct(
         tone=result["applied_tone"],
         detected_tone=result["detected_tone"],
     )
-    db.add(record)
-    await db.commit()
 
-    return CorrectResponse(**result)
+    warning = None
+    try:
+        db.add(record)
+        await db.commit()
+    except Exception:
+        # If database fails, we don't want to crash the whole request
+        # since the correction itself succeeded.
+        await db.rollback()
+        warning = "Correction succeeded, but history could not be saved."
+
+    return CorrectResponse(**result, warning=warning)
