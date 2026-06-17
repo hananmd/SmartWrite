@@ -1,6 +1,9 @@
 """Correction router: POST /api/correct (JWT-protected)."""
 
+import logging
+
 from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.app.auth import get_current_user
@@ -11,6 +14,7 @@ from backend.app.models.history import CorrectionHistory
 from backend.app.schemas.correct import CorrectRequest, CorrectResponse
 
 router = APIRouter(prefix="/api", tags=["correct"])
+logger = logging.getLogger(__name__)
 
 
 @router.post("/correct", response_model=CorrectResponse, status_code=status.HTTP_200_OK)
@@ -54,10 +58,11 @@ async def correct(
     try:
         db.add(record)
         await db.commit()
-    except Exception:
+    except SQLAlchemyError as exc:
         # If database fails, we don't want to crash the whole request
         # since the correction itself succeeded.
         await db.rollback()
+        logger.error(f"Failed to save correction history: {exc}")
         warning = "Correction succeeded, but history could not be saved."
 
     return CorrectResponse(**result, warning=warning)
