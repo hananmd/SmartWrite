@@ -97,10 +97,11 @@ async def correct_text(text: str, tone: str | None = None) -> dict[str, Any]:
     }
 
     max_retries = 3
-    base_backoff = 1.0  # seconds; doubled each retry: 1s, 2s, 4s
+    max_attempts = max_retries + 1
+    base_backoff = 1.0  # retry backoff: 1s, 2s, 4s
 
     async with httpx.AsyncClient(timeout=30.0) as client:
-        for attempt in range(max_retries):
+        for attempt in range(max_attempts):
             try:
                 response = await client.post(_GROQ_URL, json=payload, headers=headers)
             except (httpx.ConnectError, httpx.TimeoutException) as exc:
