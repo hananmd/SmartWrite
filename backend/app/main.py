@@ -6,8 +6,10 @@ Run locally from the project root:
 """
 
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
 from sqlalchemy import text
 
 from backend.app.config import get_settings
@@ -15,6 +17,8 @@ from backend.app.database import engine
 from backend.app.routers import auth as auth_router
 from backend.app.routers import correct as correct_router
 from backend.app.routers import history as history_router
+
+FRONTEND_DIR = Path(__file__).parents[2] / "frontend"
 
 settings = get_settings()
 
@@ -52,3 +56,9 @@ async def health() -> dict[str, str]:
     async with engine.connect() as conn:
         await conn.execute(text("SELECT 1"))
     return {"status": "ok", "service": settings.app_name}
+
+
+# Mount the PWA static files last so API routes always take priority.
+# Guarded so the app still boots if the frontend directory is absent (e.g. API-only deploys).
+if FRONTEND_DIR.exists():
+    app.mount("/", StaticFiles(directory=str(FRONTEND_DIR), html=True), name="frontend")
