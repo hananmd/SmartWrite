@@ -39,7 +39,7 @@
   `get_current_user`; 503 on Groq issues). Router registered in `main.py`.
   No new pip packages required (httpx was already in requirements.txt).
   Smoke-tested: formal-tone correction OK, no-tone (AI picks friendly) OK,
-  unauthenticated 403, invalid tone 422.
+  invalid tokens rejected with 401, invalid tone 422.
 
 - 2026-06-18 — History + analytics endpoints (PROGRESS item 4):
   `backend/app/schemas/history.py` — `HistoryItem`, `HistoryResponse`,
@@ -49,10 +49,10 @@
   `GET /api/analytics` (total corrections, per-tone breakdown ordered by
   count desc, most-used tone, corrections in last 7 days — all aggregated
   from unencrypted `tone`/`created_at` columns per CLAUDE.md design).
-  Both endpoints are JWT-protected; unauthed requests return 403.
+  Both endpoints are JWT-protected; token validation failures return 401.
   Router registered in `main.py`. No new migration needed.
   Smoke-tested: history returns decrypted items + total; analytics returns
-  correct counts; unauthenticated requests rejected 403.
+  correct counts; invalid tokens rejected with 401.
 
 - 2026-06-18 — CorrectionHistory model + encrypted history save (PROGRESS item 3 continued):
   `backend/app/encryption.py` — Fernet encrypt/decrypt helpers; key loaded from
