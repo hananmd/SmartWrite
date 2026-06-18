@@ -22,7 +22,7 @@ router = APIRouter(prefix="/api", tags=["history"])
 
 @router.get("/history", response_model=HistoryResponse)
 async def get_history(
-    limit: int = Query(default=20, ge=1, le=100, description="Records per page (1–100)."),
+    limit: int = Query(default=20, ge=1, le=100, description="Records per page (1-100)."),
     offset: int = Query(default=0, ge=0, description="Number of records to skip."),
     current_user=Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
