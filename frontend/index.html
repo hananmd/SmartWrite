@@ -6,6 +6,8 @@
   <title>SmartWrite</title>
   <link rel="manifest" href="/manifest.json"/>
   <link rel="icon" href="/icon.svg" type="image/svg+xml"/>
+  <!-- Apple touch icon for iOS/home screen -->
+  <link rel="apple-touch-icon" href="/icon.png"/>
   <link rel="stylesheet"
         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"/>
   <link rel="stylesheet"
@@ -38,6 +40,9 @@
       line-height: 1.6;
     }
     .result-tone-badge { font-size: 0.72rem; }
+    /* larger spinner sizing moved from inline styles */
+    .spinner-lg { width: 3rem; height: 3rem; }
+    .brand-title { color: #6366f1; }
   </style>
 </head>
 <body>
@@ -45,7 +50,7 @@
 <!-- Loading spinner (hidden after auth check) -->
 <div id="loading-overlay">
   <div class="text-center">
-    <div class="spinner-border text-primary mb-3" style="width:3rem;height:3rem;"></div>
+    <div class="spinner-border text-primary mb-3 spinner-lg"></div>
     <div class="text-muted small">Loading SmartWrite…</div>
   </div>
 </div>
@@ -60,24 +65,24 @@
     </div>
     <div class="card shadow-sm">
       <div class="card-body p-4">
-        <ul class="nav nav-tabs mb-4" role="tablist">
-          <li class="nav-item flex-fill text-center">
-            <button class="nav-link active w-100" data-bs-toggle="tab" data-bs-target="#login-pane">
+        <div class="nav nav-tabs mb-4" role="tablist">
+          <div class="nav-item flex-fill text-center">
+            <button id="login-tab-btn" class="nav-link active w-100" type="button" role="tab" aria-controls="login-pane" aria-selected="true" data-bs-toggle="tab" data-bs-target="#login-pane">
               Sign In
             </button>
-          </li>
-          <li class="nav-item flex-fill text-center">
-            <button class="nav-link w-100" data-bs-toggle="tab" data-bs-target="#register-pane">
+          </div>
+          <div class="nav-item flex-fill text-center">
+            <button id="register-tab-btn" class="nav-link w-100" type="button" role="tab" aria-controls="register-pane" aria-selected="false" data-bs-toggle="tab" data-bs-target="#register-pane">
               Sign Up
             </button>
-          </li>
-        </ul>
+          </div>
+        </div>
 
         <div id="auth-error" class="alert alert-danger d-none py-2 small" role="alert"></div>
 
         <div class="tab-content">
           <!-- Login -->
-          <div class="tab-pane fade show active" id="login-pane">
+          <div class="tab-pane fade show active" id="login-pane" role="tabpanel" aria-labelledby="login-tab-btn">
             <form id="login-form" novalidate>
               <div class="mb-3">
                 <label for="login-email" class="form-label">Email</label>
@@ -97,7 +102,7 @@
           </div>
 
           <!-- Register -->
-          <div class="tab-pane fade" id="register-pane">
+          <div class="tab-pane fade" id="register-pane" role="tabpanel" aria-labelledby="register-tab-btn">
             <form id="register-form" novalidate>
               <div class="mb-3">
                 <label for="reg-email" class="form-label">Email</label>
@@ -128,11 +133,11 @@
   <nav class="navbar navbar-expand-lg navbar-dark" style="background:#6366f1;">
     <div class="container-fluid">
       <span class="navbar-brand fw-bold d-flex align-items-center gap-2">
-        <img src="/icon.svg" width="28" height="28" alt=""/>SmartWrite
+        <img src="/icon.svg" width="28" height="28" alt="SmartWrite logo"/>SmartWrite
       </span>
       <div class="ms-auto d-flex align-items-center gap-3">
         <span class="text-white-50 small d-none d-md-inline" id="user-email"></span>
-        <button id="logout-btn" class="btn btn-outline-light btn-sm">
+        <button id="logout-btn" type="button" class="btn btn-outline-light btn-sm">
           <i class="bi bi-box-arrow-right me-1"></i>Sign Out
         </button>
       </div>
@@ -142,23 +147,17 @@
   <div class="container py-4" style="max-width: 880px;">
 
     <!-- Main tabs -->
-    <ul class="nav nav-pills mb-4" id="main-tabs" role="tablist">
-      <li class="nav-item">
-        <button class="nav-link active" data-tab="write">
-          <i class="bi bi-pencil-square me-1"></i>Write
-        </button>
-      </li>
-      <li class="nav-item">
-        <button class="nav-link" data-tab="history">
-          <i class="bi bi-clock-history me-1"></i>History
-        </button>
-      </li>
-      <li class="nav-item">
-        <button class="nav-link" data-tab="analytics">
-          <i class="bi bi-bar-chart-line me-1"></i>Analytics
-        </button>
-      </li>
-    </ul>
+    <div class="nav nav-pills mb-4" id="main-tabs" role="tablist">
+      <button id="main-tab-write-btn" class="nav-link active" type="button" role="tab" aria-controls="tab-write" aria-selected="true" data-tab="write">
+        <i class="bi bi-pencil-square me-1"></i>Write
+      </button>
+      <button id="main-tab-history-btn" class="nav-link" type="button" role="tab" aria-controls="tab-history" aria-selected="false" data-tab="history">
+        <i class="bi bi-clock-history me-1"></i>History
+      </button>
+      <button id="main-tab-analytics-btn" class="nav-link" type="button" role="tab" aria-controls="tab-analytics" aria-selected="false" data-tab="analytics">
+        <i class="bi bi-bar-chart-line me-1"></i>Analytics
+      </button>
+    </div>
 
     <!-- ---- WRITE TAB ---- -->
     <div id="tab-write">
@@ -171,7 +170,7 @@
                 placeholder="Paste or type your text here…"
                 maxlength="5000" required></textarea>
               <div class="form-text text-end">
-                <span id="char-count">0</span> / 5 000 characters
+                <span id="char-count" aria-live="polite">0</span> / 5000 characters
               </div>
             </div>
             <div class="row g-3 align-items-end">
@@ -211,7 +210,7 @@
             <div id="corrected-text-box"></div>
             <div class="d-flex justify-content-between align-items-start mt-3 gap-2">
               <small class="text-muted" id="result-summary"></small>
-              <button id="copy-btn" class="btn btn-sm btn-outline-secondary flex-shrink-0">
+              <button id="copy-btn" type="button" class="btn btn-sm btn-outline-secondary flex-shrink-0">
                 <i class="bi bi-clipboard me-1"></i>Copy
               </button>
             </div>
@@ -226,7 +225,7 @@
       <div class="card shadow-sm">
         <div class="card-header d-flex justify-content-between align-items-center">
           <span class="fw-semibold">Correction History</span>
-          <button id="refresh-history-btn" class="btn btn-sm btn-outline-secondary" title="Refresh">
+          <button id="refresh-history-btn" type="button" class="btn btn-sm btn-outline-secondary" title="Refresh">
             <i class="bi bi-arrow-clockwise"></i>
           </button>
         </div>
@@ -236,7 +235,7 @@
           No corrections yet. Use the <strong>Write</strong> tab to get started.
         </div>
         <div id="load-more-footer" class="card-footer text-center d-none">
-          <button id="load-more-btn" class="btn btn-sm btn-outline-primary">Load more</button>
+          <button id="load-more-btn" type="button" class="btn btn-sm btn-outline-primary">Load more</button>
         </div>
       </div>
     </div><!-- /tab-history -->
@@ -286,6 +285,6 @@
 </div><!-- /app-view -->
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="/app.js"></script>
+<script src="/app.js" defer></script>
 </body>
 </html>
