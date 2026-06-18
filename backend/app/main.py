@@ -14,6 +14,7 @@ from backend.app.config import get_settings
 from backend.app.database import engine
 from backend.app.routers import auth as auth_router
 from backend.app.routers import correct as correct_router
+from backend.app.routers import history as history_router
 
 settings = get_settings()
 
@@ -38,6 +39,7 @@ app = FastAPI(
 
 app.include_router(auth_router.router)
 app.include_router(correct_router.router)
+app.include_router(history_router.router)
 
 
 @app.get("/health", tags=["meta"])

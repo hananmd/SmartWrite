@@ -41,6 +41,19 @@
   Smoke-tested: formal-tone correction OK, no-tone (AI picks friendly) OK,
   unauthenticated 403, invalid tone 422.
 
+- 2026-06-18 — History + analytics endpoints (PROGRESS item 4):
+  `backend/app/schemas/history.py` — `HistoryItem`, `HistoryResponse`,
+  `ToneCount`, `AnalyticsResponse` Pydantic schemas.
+  `backend/app/routers/history.py` — `GET /api/history` (paginated,
+  decrypts text fields, newest-first; `limit`/`offset` query params) and
+  `GET /api/analytics` (total corrections, per-tone breakdown ordered by
+  count desc, most-used tone, corrections in last 7 days — all aggregated
+  from unencrypted `tone`/`created_at` columns per CLAUDE.md design).
+  Both endpoints are JWT-protected; unauthed requests return 403.
+  Router registered in `main.py`. No new migration needed.
+  Smoke-tested: history returns decrypted items + total; analytics returns
+  correct counts; unauthenticated requests rejected 403.
+
 - 2026-06-18 — CorrectionHistory model + encrypted history save (PROGRESS item 3 continued):
   `backend/app/encryption.py` — Fernet encrypt/decrypt helpers; key loaded from
   `HISTORY_ENCRYPTION_KEY` env var, raises `RuntimeError` if missing (fail loudly).
@@ -66,8 +79,8 @@
 3. [x] `CorrectionHistory` model with encrypted `original_text` /
    `corrected_text` (Fernet, key from `HISTORY_ENCRYPTION_KEY`); save on
    every `/api/correct` call. ✓ Done 2026-06-18
-4. [ ] `/api/history` + basic analytics endpoint (most-used tone,
-   correction frequency).
+4. [x] `/api/history` + basic analytics endpoint (most-used tone,
+   correction frequency). ✓ Done 2026-06-18
 5. [ ] PWA frontend: Bootstrap UI, installable manifest + service worker,
    wired to the backend.
 6. [ ] Chrome extension: MV3 manifest, selection-capture content script,
