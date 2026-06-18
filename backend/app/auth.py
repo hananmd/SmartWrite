@@ -13,7 +13,7 @@ import secrets
 from datetime import datetime, timedelta, timezone
 
 import jwt
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, Request, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -23,9 +23,11 @@ from backend.app.database import get_db
 
 settings = get_settings()
 
-_bearer = HTTPBearer()
+# auto_error=False so the PWA's cookie path doesn't get a 403 on missing header.
+_bearer = HTTPBearer(auto_error=False)
 
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
+AUTH_COOKIE_NAME = "smartwrite_token"
 _ALGORITHM = "HS256"
 _ITERATIONS = 600_000
 
@@ -67,13 +69,28 @@ def create_access_token(user_id: int) -> str:
 # ---------------------------------------------------------------------------
 
 async def get_current_user(
-    credentials: HTTPAuthorizationCredentials = Depends(_bearer),
+    request: Request,
+    credentials: HTTPAuthorizationCredentials | None = Depends(_bearer),
     db: AsyncSession = Depends(get_db),
 ):
-    """Validate the Bearer token and return the authenticated User row."""
+    """Validate the Bearer token or httpOnly cookie and return the authenticated User row.
+
+    Checks Authorization: Bearer first (Chrome extension path), then falls
+    back to the smartwrite_token httpOnly cookie (PWA path).
+    """
     from backend.app.models.user import User  # local import avoids circular dep
 
-    token = credentials.credentials
+    token = credentials.credentials if credentials else None
+    if not token:
+        token = request.cookies.get(AUTH_COOKIE_NAME)
+
+    if not token:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
     try:
         payload = jwt.decode(token, settings.secret_key, algorithms=[_ALGORITHM])
         user_id = int(payload["sub"])

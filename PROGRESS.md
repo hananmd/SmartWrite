@@ -41,6 +41,34 @@
   Smoke-tested: formal-tone correction OK, no-tone (AI picks friendly) OK,
   invalid tokens rejected with 401, invalid tone 422.
 
+- 2026-06-18 — PWA frontend (PROGRESS item 5):
+  `backend/app/auth.py` — `get_current_user` now accepts either an httpOnly
+  cookie (`smartwrite_token`) or an `Authorization: Bearer` header, so the
+  PWA and the Chrome extension use separate storage paths as spec'd in CLAUDE.md.
+  `HTTPBearer(auto_error=False)` prevents a 403 when no header is present.
+  `backend/app/routers/auth.py` — `POST /api/register` and `POST /api/login`
+  both set the httpOnly `smartwrite_token` cookie (`samesite=lax`,
+  `secure=not DEBUG`) in addition to returning the JSON token body.
+  Added `POST /api/logout` (clears cookie) and `GET /api/me` (returns
+  `{id, email}` — used by the PWA to check auth state on page load).
+  `backend/app/main.py` — mounts `frontend/` as `StaticFiles(html=True)` at
+  `/` after all API routers (guard: only if the directory exists).
+  `frontend/index.html` — SPA with Bootstrap 5 + Bootstrap Icons; loading
+  overlay, auth view (Sign In / Sign Up tabs), app view (Write / History /
+  Analytics tabs).
+  `frontend/app.js` — vanilla JS; async `init()` calls `/api/me` to resolve
+  auth state; cookie-based fetch (`credentials:'include'`) for all API calls;
+  char counter, tone selector, result display with copy button, paginated
+  history, analytics stat cards + progress bar tone breakdown.
+  `frontend/manifest.json` — PWA manifest (name, SVG icon, standalone display).
+  `frontend/sw.js` — service worker: cache-first for static assets,
+  network-only for `/api/*`; `skipWaiting` + `clients.claim` for instant activation.
+  `frontend/icon.svg` — indigo "W" on rounded square.
+  `.env.example` — updated: `DEBUG=true` documented for local HTTP cookie dev.
+  Smoke-tested: auth view renders, cookie login/logout cycle works, Write/
+  History/Analytics tabs all load with correct data; unauthenticated paths
+  redirect to auth view.
+
 - 2026-06-18 — History + analytics endpoints (PROGRESS item 4):
   `backend/app/schemas/history.py` — `HistoryItem`, `HistoryResponse`,
   `ToneCount`, `AnalyticsResponse` Pydantic schemas.
@@ -81,8 +109,8 @@
    every `/api/correct` call. ✓ Done 2026-06-18
 4. [x] `/api/history` + basic analytics endpoint (most-used tone,
    correction frequency). ✓ Done 2026-06-18
-5. [ ] PWA frontend: Bootstrap UI, installable manifest + service worker,
-   wired to the backend.
+5. [x] PWA frontend: Bootstrap UI, installable manifest + service worker,
+   wired to the backend. ✓ Done 2026-06-18
 6. [ ] Chrome extension: MV3 manifest, selection-capture content script,
    floating action button, popup, wired to the backend.
 7. [ ] Deploy: Render web service + Render free Postgres, env vars set,
