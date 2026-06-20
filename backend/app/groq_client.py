@@ -105,8 +105,8 @@ async def correct_text(text: str, tone: str | None = None) -> dict[str, Any]:
             try:
                 response = await client.post(_GROQ_URL, json=payload, headers=headers)
             except (httpx.ConnectError, httpx.TimeoutException) as exc:
-                logger.warning("Groq connection error (attempt %d/%d)", attempt + 1, max_retries)
-                if attempt == max_retries - 1:
+                logger.warning("Groq connection error (attempt %d/%d)", attempt + 1, max_attempts)
+                if attempt >= max_retries:
                     raise GroqUnavailableError(
                         "The AI writing service is temporarily unavailable. Please try again in a moment."
                     ) from exc
@@ -114,8 +114,8 @@ async def correct_text(text: str, tone: str | None = None) -> dict[str, Any]:
                 continue
 
             if response.status_code == 429:
-                logger.warning("Groq rate limit hit (attempt %d/%d)", attempt + 1, max_retries)
-                if attempt == max_retries - 1:
+                logger.warning("Groq rate limit hit (attempt %d/%d)", attempt + 1, max_attempts)
+                if attempt >= max_retries:
                     raise GroqUnavailableError(
                         "Rate limit reached. Please wait a moment and try again."
                     )
@@ -127,9 +127,9 @@ async def correct_text(text: str, tone: str | None = None) -> dict[str, Any]:
                     "Groq server error %d (attempt %d/%d)",
                     response.status_code,
                     attempt + 1,
-                    max_retries,
+                    max_attempts,
                 )
-                if attempt == max_retries - 1:
+                if attempt >= max_retries:
                     raise GroqUnavailableError(
                         "The AI service is experiencing issues. Please try again shortly."
                     )
