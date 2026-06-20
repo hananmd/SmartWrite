@@ -42,5 +42,5 @@ def test_wrong_key_raises_invalid_token():
 def test_corrupted_ciphertext_raises():
     ciphertext = encrypt_text("data")
     corrupted = ciphertext[:-4] + b"xxxx"
-    with pytest.raises(Exception):
+    with pytest.raises(InvalidToken):
         decrypt_text(corrupted)

@@ -70,6 +70,15 @@ def _tables() -> None:
     asyncio.run(_drop_all())
 
 
+# ── Direct DB access for tests that verify storage ───────────────────────────
+
+@pytest_asyncio.fixture
+async def db_session():
+    """Yield a raw AsyncSession against the test engine for storage-level assertions."""
+    async with _TestSession() as session:
+        yield session
+
+
 # ── HTTP test client ──────────────────────────────────────────────────────────
 
 @pytest_asyncio.fixture

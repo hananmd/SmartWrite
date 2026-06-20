@@ -9,7 +9,13 @@ Groq calls are mocked at the router's import binding
 """
 from unittest.mock import AsyncMock, patch
 
+import jwt
 import pytest
+from sqlalchemy import select
+
+from backend.app.auth import _ALGORITHM
+from backend.app.config import get_settings
+from backend.app.models.history import CorrectionHistory
 
 _MOCK_GROQ = {
     "detected_tone": "casual",
@@ -213,7 +219,7 @@ async def test_history_empty_for_new_user(client):
     assert data["items"] == []
 
 
-async def test_history_appears_after_correction(client):
+async def test_history_appears_after_correction(client, db_session):
     reg = await client.post("/api/register", json={
         "email": "hist_fill@example.com", "password": "Password123!",
     })
@@ -225,8 +231,13 @@ async def test_history_appears_after_correction(client):
         new_callable=AsyncMock,
         return_value=_MOCK_GROQ,
     ):
-        await client.post("/api/correct", json={"text": "hello world"}, headers=headers)
+        await client.post(
+            "/api/correct",
+            json={"text": "hello world", "tone": "formal"},
+            headers=headers,
+        )
 
+    # --- API response: decrypted values should be plaintext ---
     r = await client.get("/api/history", headers=headers)
     assert r.status_code == 200
     data = r.json()
@@ -234,6 +245,22 @@ async def test_history_appears_after_correction(client):
     assert data["items"][0]["original_text"] == "hello world"
     assert data["items"][0]["corrected_text"] == "This is a corrected sentence."
     assert data["items"][0]["tone"] == "formal"
+
+    # --- Storage: DB must hold ciphertext, not plaintext ---
+    user_id = int(jwt.decode(token, get_settings().secret_key, algorithms=[_ALGORITHM])["sub"])
+    result = await db_session.execute(
+        select(CorrectionHistory).where(CorrectionHistory.user_id == user_id)
+    )
+    row = result.scalar_one()
+    # Bytes, not a string
+    assert isinstance(row.original_text, bytes)
+    assert isinstance(row.corrected_text, bytes)
+    # Plaintext must not be visible in the stored bytes
+    assert b"hello world" not in row.original_text
+    assert b"This is a corrected sentence." not in row.corrected_text
+    # All Fernet tokens start with b"gA" (version byte \x80 in base64url)
+    assert row.original_text.startswith(b"gA")
+    assert row.corrected_text.startswith(b"gA")
 
 
 async def test_history_pagination_limit(client):
