@@ -82,7 +82,13 @@ function main() {
   function sendMsg(msg) {
     return new Promise(resolve => {
       try {
-        chrome.runtime.sendMessage(msg, resolve);
+        chrome.runtime.sendMessage(msg, response => {
+          if (chrome.runtime.lastError) {
+            resolve({ ok: false, error: chrome.runtime.lastError.message });
+          } else {
+            resolve(response);
+          }
+        });
       } catch {
         resolve({ ok: false, error: 'Extension context invalid. Reload the page.' });
       }
@@ -165,7 +171,8 @@ function main() {
       panel.querySelector('#sw-summary').textContent   = d.changes_summary;
       swShow('sw-result');
     } else if (resp.status === 401 || resp.status === 403) {
-      // Token expired — prompt re-login
+      // Token expired — clear stale token then prompt re-login
+      await sendMsg({ action: 'logout' });
       swHide('sw-ui');
       swShow('sw-notauth');
     } else if (resp.status === 503) {

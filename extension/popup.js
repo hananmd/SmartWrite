@@ -51,22 +51,22 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
 });
 
 // ---------------------------------------------------------------------------
-// Sign In
+// Shared auth handler (login + register share identical flow)
 // ---------------------------------------------------------------------------
 
-$('login-btn').addEventListener('click', async () => {
-  hide('login-error');
-  const email    = $('login-email').value.trim();
-  const password = $('login-password').value;
+async function handleAuth(action, emailId, passwordId, spinnerId, btnId, errorId) {
+  hide(errorId);
+  const email    = $(emailId).value.trim();
+  const password = $(passwordId).value;
   if (!email || !password) return;
 
-  $('login-spinner').classList.remove('hidden');
-  $('login-btn').disabled = true;
+  $(spinnerId).classList.remove('hidden');
+  $(btnId).disabled = true;
 
-  const resp = await send({ action: 'login', email, password });
+  const resp = await send({ action, email, password });
 
-  $('login-spinner').classList.add('hidden');
-  $('login-btn').disabled = false;
+  $(spinnerId).classList.add('hidden');
+  $(btnId).disabled = false;
 
   if (resp && resp.ok) {
     const { apiBase, userEmail } = await send({ action: 'getConfig' });
@@ -75,44 +75,27 @@ $('login-btn').addEventListener('click', async () => {
     hide('auth-view');
     show('app-view');
   } else {
-    $('login-error').textContent = resp?.data?.detail || 'Login failed. Check your credentials.';
-    show('login-error');
+    const fallback = action === 'login'
+      ? 'Login failed. Check your credentials.'
+      : 'Registration failed. Try a different email.';
+    $(errorId).textContent = resp?.data?.detail || fallback;
+    show(errorId);
   }
-});
+}
 
-// Enter key on password field triggers login
+$('login-btn').addEventListener('click', () =>
+  handleAuth('login', 'login-email', 'login-password', 'login-spinner', 'login-btn', 'login-error')
+);
+$('reg-btn').addEventListener('click', () =>
+  handleAuth('register', 'reg-email', 'reg-password', 'reg-spinner', 'reg-btn', 'reg-error')
+);
+
+// Enter key triggers submit on both password fields
 $('login-password').addEventListener('keydown', (e) => {
   if (e.key === 'Enter') $('login-btn').click();
 });
-
-// ---------------------------------------------------------------------------
-// Sign Up
-// ---------------------------------------------------------------------------
-
-$('reg-btn').addEventListener('click', async () => {
-  hide('reg-error');
-  const email    = $('reg-email').value.trim();
-  const password = $('reg-password').value;
-  if (!email || !password) return;
-
-  $('reg-spinner').classList.remove('hidden');
-  $('reg-btn').disabled = true;
-
-  const resp = await send({ action: 'register', email, password });
-
-  $('reg-spinner').classList.add('hidden');
-  $('reg-btn').disabled = false;
-
-  if (resp && resp.ok) {
-    const { apiBase, userEmail } = await send({ action: 'getConfig' });
-    $('api-base-input').value = apiBase;
-    $('user-email').textContent = userEmail;
-    hide('auth-view');
-    show('app-view');
-  } else {
-    $('reg-error').textContent = resp?.data?.detail || 'Registration failed. Try a different email.';
-    show('reg-error');
-  }
+$('reg-password').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') $('reg-btn').click();
 });
 
 // ---------------------------------------------------------------------------
@@ -178,6 +161,9 @@ $('correct-btn').addEventListener('click', async () => {
     await send({ action: 'logout' });
     hide('app-view');
     show('auth-view');
+  } else if (resp.status === 429) {
+    $('correct-error').textContent = 'Rate limit reached. Please wait a moment and try again.';
+    show('correct-error');
   } else if (resp.status === 503) {
     $('correct-error').textContent =
       resp.data?.detail || 'AI service temporarily unavailable. Try again shortly.';
@@ -208,9 +194,25 @@ $('copy-btn').addEventListener('click', () => {
 $('save-api-base').addEventListener('click', async () => {
   const url = $('api-base-input').value.trim();
   if (!url) return;
-  await send({ action: 'setApiBase', apiBase: url });
-  $('save-api-base').textContent = 'Saved!';
-  setTimeout(() => { $('save-api-base').textContent = 'Save'; }, 2000);
+
+  // Quick client-side format check before hitting the background.
+  try {
+    const p = new URL(url);
+    if (p.protocol !== 'http:' && p.protocol !== 'https:') throw new Error();
+  } catch {
+    $('save-api-base').textContent = 'Invalid URL';
+    setTimeout(() => { $('save-api-base').textContent = 'Save'; }, 3000);
+    return;
+  }
+
+  const resp = await send({ action: 'setApiBase', apiBase: url });
+  if (resp && !resp.ok) {
+    $('save-api-base').textContent = resp.error || 'Invalid URL';
+    setTimeout(() => { $('save-api-base').textContent = 'Save'; }, 3000);
+  } else {
+    $('save-api-base').textContent = 'Saved!';
+    setTimeout(() => { $('save-api-base').textContent = 'Save'; }, 2000);
+  }
 });
 
 // ---------------------------------------------------------------------------

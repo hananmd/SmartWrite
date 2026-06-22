@@ -197,7 +197,8 @@
   font-size: 13px;
   line-height: 1.6;
   white-space: pre-wrap;
-  word-break: break-word;
+  overflow-wrap: anywhere;
+  word-break: normal;
   max-height: 140px;
   overflow-y: auto;
   color: #1e1e2e;

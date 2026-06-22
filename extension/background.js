@@ -33,6 +33,23 @@ async function getApiBase() {
 }
 
 async function setApiBase(url) {
+  let parsed;
+  try {
+    parsed = new URL(url);
+  } catch {
+    return { ok: false, error: 'URL is not valid.' };
+  }
+  if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
+    return { ok: false, error: 'URL must use http or https.' };
+  }
+  const host = parsed.hostname;
+  const trusted =
+    host === 'localhost' ||
+    host === '127.0.0.1' ||
+    host.endsWith('.onrender.com');
+  if (!trusted) {
+    return { ok: false, error: 'Host must be localhost or *.onrender.com.' };
+  }
   await chrome.storage.local.set({ apiBase: url.replace(/\/$/, '') });
   return { ok: true };
 }
