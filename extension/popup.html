@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SmartWrite</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      width: 380px;
+      font-family: system-ui, -apple-system, sans-serif;
+      font-size: 14px;
+      background: #f8f9fa;
+      color: #1e1e2e;
+    }
+
+    /* ---- Header ---- */
+    .hdr {
+      background: #6366f1;
+      color: #fff;
+      padding: 11px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .hdr-logo  { font-weight: 700; font-size: 16px; letter-spacing: -0.5px; }
+    .hdr-email {
+      font-size: 12px; opacity: 0.85;
+      max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+
+    /* ---- Utilities ---- */
+    .hidden { display: none !important; }
+
+    /* ---- Card ---- */
+    .card {
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(0,0,0,.08);
+      margin: 12px;
+      padding: 16px;
+    }
+
+    /* ---- Tabs ---- */
+    .tabs { display: flex; border-bottom: 1px solid #e2e8f0; margin-bottom: 16px; }
+    .tab-btn {
+      flex: 1; border: none; background: none; padding: 8px;
+      cursor: pointer; font-size: 14px; color: #64748b;
+      border-bottom: 2px solid transparent; font-family: inherit;
+    }
+    .tab-btn.active { color: #6366f1; border-bottom-color: #6366f1; font-weight: 600; }
+
+    /* ---- Form ---- */
+    .field { margin-bottom: 12px; }
+    .field label {
+      display: block; font-size: 12px; font-weight: 600;
+      color: #475569; margin-bottom: 4px;
+    }
+    .field input, .field select, .field textarea {
+      width: 100%; border: 1px solid #e2e8f0; border-radius: 6px;
+      padding: 8px 10px; font-size: 14px; font-family: inherit;
+      color: #1e1e2e; outline: none; background: #fff;
+      transition: border-color 0.15s;
+    }
+    .field input:focus, .field select:focus, .field textarea:focus {
+      border-color: #6366f1;
+    }
+    .field textarea { resize: vertical; min-height: 90px; }
+    .char-count { font-size: 11px; color: #94a3b8; text-align: right; margin-top: 2px; }
+
+    /* ---- Buttons ---- */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+      border: none; border-radius: 6px; padding: 8px 16px;
+      font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit;
+      transition: opacity 0.15s, background 0.15s;
+    }
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .btn-primary { background: #6366f1; color: #fff; width: 100%; }
+    .btn-primary:hover:not(:disabled) { background: #5254cc; }
+    .btn-outline {
+      background: transparent; color: #6366f1; border: 1px solid #6366f1;
+    }
+    .btn-outline:hover:not(:disabled) { background: #f0f0ff; }
+    .btn-sm { padding: 5px 12px; font-size: 13px; }
+
+    /* ---- Spinner ---- */
+    .spinner {
+      width: 14px; height: 14px;
+      border: 2px solid rgba(255,255,255,.4);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ---- Alerts ---- */
+    .alert { padding: 8px 12px; border-radius: 6px; font-size: 13px; margin-bottom: 12px; }
+    .alert-danger  { background: #fef2f2; color: #dc2626; }
+    .alert-warning { background: #fffbeb; color: #92400e; }
+
+    /* ---- Result ---- */
+    .result-meta { font-size: 11px; color: #64748b; margin-bottom: 6px; display: flex; gap: 8px; }
+    .result-box {
+      background: #f8f9fa; border: 1px solid #e2e8f0; border-left: 3px solid #6366f1;
+      border-radius: 6px; padding: 10px; font-size: 13px; line-height: 1.6;
+      white-space: pre-wrap; word-break: break-word; max-height: 150px; overflow-y: auto;
+    }
+    .result-summary { font-size: 12px; color: #64748b; font-style: italic; margin-top: 8px; }
+    .result-footer  { display: flex; justify-content: flex-end; margin-top: 10px; }
+
+    /* ---- Loading overlay ---- */
+    #loading-view {
+      display: flex; align-items: center; justify-content: center; height: 80px;
+    }
+    .dot-spin { display: flex; gap: 6px; }
+    .dot-spin span {
+      width: 8px; height: 8px; background: #6366f1; border-radius: 50%;
+      animation: bounce 0.8s ease-in-out infinite;
+    }
+    .dot-spin span:nth-child(2) { animation-delay: 0.16s; }
+    .dot-spin span:nth-child(3) { animation-delay: 0.32s; }
+    @keyframes bounce {
+      0%, 80%, 100% { transform: scale(0.75); opacity: 0.5; }
+      40% { transform: scale(1); opacity: 1; }
+    }
+
+    /* ---- Footer area ---- */
+    .footer-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 12px 10px; gap: 8px;
+    }
+    .api-base-row {
+      padding: 0 12px 12px;
+    }
+    .api-base-row label {
+      display: block; font-size: 11px; color: #94a3b8; margin-bottom: 4px;
+    }
+    .api-base-inner { display: flex; gap: 6px; }
+    .api-base-inner input {
+      flex: 1; border: 1px solid #e2e8f0; border-radius: 6px;
+      padding: 6px 8px; font-size: 12px; font-family: inherit; outline: none;
+    }
+    .api-base-inner input:focus { border-color: #6366f1; }
+  </style>
+</head>
+<body>
+
+  <!-- Loading -->
+  <div id="loading-view">
+    <div class="dot-spin"><span></span><span></span><span></span></div>
+  </div>
+
+  <!-- Auth view -->
+  <div id="auth-view" class="hidden">
+    <div class="hdr"><span class="hdr-logo">SmartWrite</span></div>
+    <div class="card">
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="login">Sign In</button>
+        <button class="tab-btn" data-tab="register">Sign Up</button>
+      </div>
+
+      <div id="tab-login">
+        <div id="login-error" class="alert alert-danger hidden"></div>
+        <div class="field">
+          <label for="login-email">Email</label>
+          <input type="email" id="login-email" autocomplete="email" placeholder="you@example.com">
+        </div>
+        <div class="field">
+          <label for="login-password">Password</label>
+          <input type="password" id="login-password" autocomplete="current-password" placeholder="••••••••">
+        </div>
+        <button id="login-btn" class="btn btn-primary">
+          <span id="login-spinner" class="spinner hidden"></span>
+          Sign In
+        </button>
+      </div>
+
+      <div id="tab-register" class="hidden">
+        <div id="reg-error" class="alert alert-danger hidden"></div>
+        <div class="field">
+          <label for="reg-email">Email</label>
+          <input type="email" id="reg-email" autocomplete="email" placeholder="you@example.com">
+        </div>
+        <div class="field">
+          <label for="reg-password">Password</label>
+          <input type="password" id="reg-password" autocomplete="new-password" placeholder="••••••••">
+        </div>
+        <button id="reg-btn" class="btn btn-primary">
+          <span id="reg-spinner" class="spinner hidden"></span>
+          Create Account
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- App view -->
+  <div id="app-view" class="hidden">
+    <div class="hdr">
+      <span class="hdr-logo">SmartWrite</span>
+      <span class="hdr-email" id="user-email"></span>
+    </div>
+
+    <div class="card">
+      <div id="correct-error" class="alert alert-danger hidden"></div>
+      <div class="field">
+        <label for="input-text">Text to correct</label>
+        <textarea id="input-text" maxlength="5000" placeholder="Paste or type text here…"></textarea>
+        <div class="char-count"><span id="char-count">0</span> / 5000</div>
+      </div>
+      <div class="field">
+        <label for="tone-select">Target tone</label>
+        <select id="tone-select">
+          <option value="">Auto-detect</option>
+          <option value="formal">Formal</option>
+          <option value="casual">Casual</option>
+          <option value="friendly">Friendly</option>
+          <option value="professional">Professional</option>
+        </select>
+      </div>
+      <button id="correct-btn" class="btn btn-primary">
+        <span id="correct-spinner" class="spinner hidden"></span>
+        Correct
+      </button>
+    </div>
+
+    <div id="result-card" class="card hidden">
+      <div class="result-meta">
+        <span id="result-detected"></span>
+        <span id="result-applied"></span>
+      </div>
+      <div class="result-box" id="corrected-text"></div>
+      <div class="result-summary" id="result-summary"></div>
+      <div id="result-warning" class="alert alert-warning hidden" style="margin-top:8px;margin-bottom:0;"></div>
+      <div class="result-footer">
+        <button id="copy-btn" class="btn btn-outline btn-sm">Copy</button>
+      </div>
+    </div>
+
+    <div class="footer-row">
+      <span style="font-size:12px;color:#94a3b8;">Signed in</span>
+      <button id="logout-btn" class="btn btn-outline btn-sm">Sign out</button>
+    </div>
+
+    <!-- API base URL setting — lets user switch between local dev and production -->
+    <div class="api-base-row">
+      <label>API base URL</label>
+      <div class="api-base-inner">
+        <input type="url" id="api-base-input" placeholder="http://localhost:8000">
+        <button id="save-api-base" class="btn btn-outline btn-sm">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
