@@ -181,6 +181,11 @@ async def correct_text(text: str, tone: str | None = None) -> dict[str, Any]:
 
             # Normalise and validate tone values before they reach the DB.
             # A bad AI response here would silently corrupt analytics GROUP BY queries.
+            if not isinstance(result["applied_tone"], str) or not isinstance(result["detected_tone"], str):
+                logger.error("Groq returned non-string tone field(s)")
+                raise GroqUnavailableError(
+                    "The AI returned an unexpected response. Please try again."
+                )
             result["applied_tone"] = result["applied_tone"].lower().strip()
             result["detected_tone"] = result["detected_tone"].lower().strip()
             if result["applied_tone"] not in VALID_TONES:

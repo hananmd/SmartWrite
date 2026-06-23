@@ -8,6 +8,7 @@ file during local development). Secrets must never be hardcoded here — see
 from functools import lru_cache
 from pathlib import Path
 
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 # The repo root is two levels up from this file: backend/app/config.py -> SmartWrite/
@@ -31,11 +32,21 @@ class Settings(BaseSettings):
     # "postgresql+asyncpg://..." in production (set via Render env var).
     database_url: str = "sqlite+aiosqlite:///./smartwrite.db"
 
-    # --- Secrets (used by later milestones; optional for the skeleton) ---
+    # --- Secrets ---
     secret_key: str = ""
     groq_api_key: str = ""
     groq_model: str = "llama-3.3-70b-versatile"
     history_encryption_key: str = ""
+
+    @field_validator("secret_key")
+    @classmethod
+    def secret_key_must_be_strong(cls, v: str) -> str:
+        if len(v) < 32:
+            raise ValueError(
+                "SECRET_KEY must be at least 32 characters. "
+                "Generate one with: python -c \"import secrets; print(secrets.token_hex(32))\""
+            )
+        return v
 
     model_config = SettingsConfigDict(
         env_file=str(PROJECT_ROOT / ".env"),

@@ -25,6 +25,25 @@ depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
+    # Verify no existing rows violate the CHECK constraints we are about to add.
+    # SQLite and Postgres both fail with a cryptic error if the table rebuild
+    # hits a violation — a pre-flight query gives a readable message instead.
+    conn = op.get_bind()
+    bad_tone = conn.execute(sa.text(
+        "SELECT COUNT(*) FROM correction_history "
+        "WHERE tone NOT IN ('formal', 'casual', 'friendly', 'professional')"
+    )).scalar()
+    bad_detected = conn.execute(sa.text(
+        "SELECT COUNT(*) FROM correction_history "
+        "WHERE detected_tone NOT IN ('formal', 'casual', 'friendly', 'professional', 'neutral')"
+    )).scalar()
+    if bad_tone or bad_detected:
+        raise RuntimeError(
+            f"Cannot add CHECK constraints: {bad_tone} row(s) with invalid tone, "
+            f"{bad_detected} row(s) with invalid detected_tone. "
+            "Clean the data before re-running this migration."
+        )
+
     with op.batch_alter_table("users", schema=None) as batch_op:
         batch_op.alter_column(
             "created_at",
