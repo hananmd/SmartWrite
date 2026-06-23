@@ -10,7 +10,7 @@ tone and detected_tone stay unencrypted — needed for analytics aggregation
 
 from datetime import datetime, timezone
 
-from sqlalchemy import DateTime, ForeignKey, Integer, LargeBinary, String
+from sqlalchemy import CheckConstraint, DateTime, ForeignKey, Index, Integer, LargeBinary, String, text
 from sqlalchemy.orm import Mapped, mapped_column
 
 from backend.app.database import Base
@@ -18,6 +18,22 @@ from backend.app.database import Base
 
 class CorrectionHistory(Base):
     __tablename__ = "correction_history"
+    __table_args__ = (
+        # Prevent bad AI responses from silently poisoning analytics aggregations.
+        CheckConstraint(
+            "tone IN ('formal', 'casual', 'friendly', 'professional')",
+            name="ck_correction_history_tone",
+        ),
+        # detected_tone allows 'neutral' — the model can detect it even though we
+        # never request it as a target tone.
+        CheckConstraint(
+            "detected_tone IN ('formal', 'casual', 'friendly', 'professional', 'neutral')",
+            name="ck_correction_history_detected_tone",
+        ),
+        # Composite index covers both the paginated history query (WHERE user_id ORDER BY
+        # created_at DESC) and the analytics time-range filter (WHERE user_id AND created_at >=).
+        Index("ix_correction_history_user_created", "user_id", "created_at"),
+    )
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     user_id: Mapped[int] = mapped_column(
@@ -32,5 +48,6 @@ class CorrectionHistory(Base):
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         default=lambda: datetime.now(timezone.utc),
+        server_default=text("CURRENT_TIMESTAMP"),
         nullable=False,
     )

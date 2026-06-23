@@ -115,10 +115,19 @@ async def test_me_invalid_token_returns_401(client):
 
 # ── /api/logout ───────────────────────────────────────────────────────────────
 
-async def test_logout_returns_200(client):
-    r = await client.post("/api/logout")
+async def test_logout_authenticated_returns_200(client):
+    reg = await client.post("/api/register", json={
+        "email": "logout_ok@example.com", "password": "Password123!",
+    })
+    token = reg.json()["access_token"]
+    r = await client.post("/api/logout", headers={"Authorization": f"Bearer {token}"})
     assert r.status_code == 200
     assert r.json()["message"] == "Logged out"
+
+
+async def test_logout_unauthenticated_returns_401(client):
+    r = await client.post("/api/logout")
+    assert r.status_code == 401
 
 
 # ── /api/correct ──────────────────────────────────────────────────────────────

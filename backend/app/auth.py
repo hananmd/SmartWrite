@@ -92,7 +92,15 @@ async def get_current_user(
         )
 
     try:
-        payload = jwt.decode(token, settings.secret_key, algorithms=[_ALGORITHM])
+        payload = jwt.decode(
+            token,
+            settings.secret_key,
+            algorithms=[_ALGORITHM],
+            # Reject tokens that are missing exp or sub — PyJWT only verifies
+            # a claim if it's present, so a crafted no-expiry token would
+            # otherwise pass validation silently.
+            options={"require": ["exp", "sub"]},
+        )
         user_id = int(payload["sub"])
     except (jwt.PyJWTError, KeyError, ValueError):
         raise HTTPException(
