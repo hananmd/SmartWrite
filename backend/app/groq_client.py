@@ -22,6 +22,8 @@ logger = logging.getLogger(__name__)
 _GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
 
 VALID_TONES = frozenset({"formal", "casual", "friendly", "professional"})
+# detected_tone may be 'neutral' — the model can detect it even though we never request it.
+_VALID_DETECTED_TONES = VALID_TONES | frozenset({"neutral"})
 
 _SYSTEM_PROMPT = (
     "You are a writing assistant. Given a piece of text you will:\n"
@@ -176,6 +178,22 @@ async def correct_text(text: str, tone: str | None = None) -> dict[str, Any]:
                 raise GroqUnavailableError(
                     "The AI returned an incomplete response. Please try again."
                 )
+
+            # Normalise and validate tone values before they reach the DB.
+            # A bad AI response here would silently corrupt analytics GROUP BY queries.
+            result["applied_tone"] = result["applied_tone"].lower().strip()
+            result["detected_tone"] = result["detected_tone"].lower().strip()
+            if result["applied_tone"] not in VALID_TONES:
+                logger.error("Groq returned unexpected applied_tone (value omitted for privacy)")
+                raise GroqUnavailableError(
+                    "The AI returned an unexpected response. Please try again."
+                )
+            if result["detected_tone"] not in _VALID_DETECTED_TONES:
+                logger.error("Groq returned unexpected detected_tone (value omitted for privacy)")
+                raise GroqUnavailableError(
+                    "The AI returned an unexpected response. Please try again."
+                )
+
             return result
 
     # Unreachable — every code path inside the loop either returns or raises.

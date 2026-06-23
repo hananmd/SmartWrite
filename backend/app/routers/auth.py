@@ -78,7 +78,7 @@ async def login(body: LoginRequest, response: Response, db: AsyncSession = Depen
 
 
 @router.post("/logout", status_code=status.HTTP_200_OK)
-async def logout(response: Response):
+async def logout(response: Response, current_user=Depends(get_current_user)):
     """Clear the auth cookie. The client should also discard any stored token."""
     response.delete_cookie(AUTH_COOKIE_NAME, samesite="lax")
     return {"message": "Logged out"}
