@@ -42,11 +42,22 @@ class Settings(BaseSettings):
     @classmethod
     def fix_async_driver(cls, v: str) -> str:
         # Render Postgres connection strings arrive as postgres:// or postgresql://.
-        # SQLAlchemy's asyncpg driver requires the postgresql+asyncpg:// scheme.
+        # Rewrite both to the asyncpg scheme SQLAlchemy requires.
         if v.startswith("postgres://"):
-            return "postgresql+asyncpg://" + v[len("postgres://"):]
-        if v.startswith("postgresql://"):
-            return "postgresql+asyncpg://" + v[len("postgresql://"):]
+            v = "postgresql+asyncpg://" + v[len("postgres://"):]
+        elif v.startswith("postgresql://"):
+            v = "postgresql+asyncpg://" + v[len("postgresql://"):]
+
+        # Reject any remaining Postgres URL that uses a non-asyncpg driver
+        # (e.g. postgresql+psycopg://) — these pass the rewrites above silently
+        # but fail later inside create_async_engine() with a confusing error.
+        if v.startswith("postgresql") and not v.startswith("postgresql+asyncpg://"):
+            raise ValueError(
+                "DATABASE_URL uses an unsupported PostgreSQL driver. "
+                "Use postgresql+asyncpg://, or bare postgresql:// / postgres:// "
+                "(auto-rewritten). "
+                f"Got scheme: {v.split('://')[0]}://"
+            )
         return v
 
     @field_validator("secret_key")
