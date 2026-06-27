@@ -128,7 +128,7 @@ document.getElementById('logout-btn').addEventListener('click', async () => {
 // ---------------------------------------------------------------------------
 
 function switchTab(tab) {
-  document.querySelectorAll('#main-tabs .nav-link').forEach(b => {
+  document.querySelectorAll('[data-tab].nav-link').forEach(b => {
     b.classList.toggle('active', b.dataset.tab === tab);
   });
   ['write', 'history', 'analytics'].forEach(t => {
@@ -279,7 +279,7 @@ function makeHistoryItem(item) {
                    background:${c.bg};color:${c.text};border:1px solid ${c.border};">${esc(item.tone)}</span>
       <span style="font-size:12px;color:#9991CC;">${esc(date)}</span>
     </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;">
       <div>
         <p style="font-size:10px;letter-spacing:0.15em;font-weight:700;text-transform:uppercase;color:#9991CC;margin-bottom:8px;">Original</p>
         <div style="padding:16px;border-radius:12px;background:rgba(13,13,26,0.5);border:1px solid rgba(255,255,255,0.06);font-size:14px;color:#ccc3d8;line-height:1.6;font-style:italic;">${snip(item.original_text, 200)}</div>
@@ -322,16 +322,18 @@ async function loadAnalytics() {
       breakdown.innerHTML = '<p style="color:#9991CC;text-align:center;padding:16px 0;">No data yet.</p>';
       return;
     }
-    const max = data.corrections_per_tone[0].count;
+    const counts = data.corrections_per_tone.map(tc => Number(tc.count));
+    const max = Math.max(...counts, 1);
     const barColors = { formal:'#d2bbff', casual:'#4cd7f6', friendly:'#ffb784', professional:'#d2bbff' };
-    breakdown.innerHTML = data.corrections_per_tone.map(tc => {
+    breakdown.innerHTML = data.corrections_per_tone.map((tc, i) => {
+      const count = counts[i];
       const color = barColors[tc.tone] || '#d2bbff';
-      const pct   = Math.round(tc.count / max * 100);
+      const pct   = Math.round(count / max * 100);
       return `
         <div style="margin-bottom:28px;">
           <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
             <span style="font-size:12px;letter-spacing:0.12em;font-weight:600;text-transform:uppercase;color:#e3e0f4;">${esc(tc.tone)}</span>
-            <span style="font-size:12px;letter-spacing:0.12em;font-weight:600;color:${color};">${tc.count}</span>
+            <span style="font-size:12px;letter-spacing:0.12em;font-weight:600;color:${color};">${count}</span>
           </div>
           <div style="height:10px;border-radius:9999px;background:rgba(255,255,255,0.06);overflow:hidden;">
             <div style="height:100%;border-radius:9999px;width:${pct}%;

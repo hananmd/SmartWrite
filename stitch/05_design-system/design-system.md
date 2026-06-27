@@ -101,9 +101,9 @@ typography:
 rounded:
   sm: 0.25rem
   DEFAULT: 0.5rem
-  md: 0.75rem
-  lg: 1rem
-  xl: 1.5rem
+  lg: 0.75rem
+  xl: 1rem
+  2xl: 1.5rem
   full: 9999px
 spacing:
   container-max: 1280px
@@ -153,7 +153,7 @@ Depth is not communicated through traditional black shadows, but through **Tonal
 ## Shapes
 The shape language is sophisticated and modern. All glass containers and primary UI elements use a **0.5rem (8px)** base radius.
 
-Large sections or "Master Containers" (like the main text editor area) should use `rounded-xl` (1.5rem) to emphasize the soft, "liquid" nature of the design. Interactive components like buttons should maintain the standard `rounded` (0.5rem) setting to feel precise and clickable.
+Large sections or "Master Containers" (like the main text editor area) should use `rounded-2xl` (1.5rem) to emphasize the soft, "liquid" nature of the design. Interactive components like buttons should maintain the standard `rounded` (0.5rem) setting to feel precise and clickable.
 
 ## Components
 - **Buttons**: Primary buttons use a solid Electric Violet to Cyan-Teal gradient. Secondary buttons use the glass style with a 1px border. All buttons should have a `0.2s cubic-bezier(0.34, 1.56, 0.64, 1)` transition for a "springy" feel on hover.

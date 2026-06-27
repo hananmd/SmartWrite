@@ -70,9 +70,10 @@
                         "outline": "#958da1"
                     },
                     "borderRadius": {
-                        "DEFAULT": "0.25rem",
-                        "lg": "0.5rem",
-                        "xl": "0.75rem",
+                        "DEFAULT": "0.5rem",
+                        "lg": "0.75rem",
+                        "xl": "1rem",
+                        "2xl": "1.5rem",
                         "full": "9999px"
                     },
                     "spacing": {
@@ -220,16 +221,28 @@
 <div class="space-y-2">
 <div class="flex justify-between items-center px-1">
 <label class="font-label-sm text-label-sm text-text-muted uppercase tracking-widest" for="password">Password</label>
-<a class="font-label-xs text-label-xs text-secondary hover:text-primary transition-colors" href="#">FORGOT?</a>
+<a class="font-label-xs text-label-xs text-secondary hover:text-primary transition-colors" href="#" id="forgot-link">FORGOT?</a>
 </div>
 <div class="relative group">
 <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline text-lg transition-colors group-focus-within:text-secondary">
                             lock
                         </span>
 <input class="w-full bg-glass-fill border border-glass-stroke rounded-lg py-3.5 pl-12 pr-4 text-on-surface font-body-md outline-none transition-all duration-300 hover:bg-white/10 focus:bg-white/10 placeholder:text-outline/50" id="password" placeholder="••••••••" type="password"/>
-<button class="absolute right-4 top-1/2 -translate-y-1/2 text-outline hover:text-on-surface transition-colors" type="button">
-<span class="material-symbols-outlined text-lg">visibility</span>
+<button class="absolute right-4 top-1/2 -translate-y-1/2 text-outline hover:text-on-surface transition-colors" type="button" onclick="togglePassword()">
+<span class="material-symbols-outlined text-lg" id="visibility-icon">visibility</span>
 </button>
+</div>
+</div>
+<!-- Confirm Password Field (sign-up only) -->
+<div class="space-y-2 hidden" id="confirm-password-field">
+<div class="flex items-center px-1">
+<label class="font-label-sm text-label-sm text-text-muted uppercase tracking-widest" for="confirm-password">Confirm Password</label>
+</div>
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline text-lg transition-colors group-focus-within:text-secondary">
+                            lock
+                        </span>
+<input class="w-full bg-glass-fill border border-glass-stroke rounded-lg py-3.5 pl-12 pr-4 text-on-surface font-body-md outline-none transition-all duration-300 hover:bg-white/10 focus:bg-white/10 placeholder:text-outline/50" id="confirm-password" placeholder="••••••••" type="password"/>
 </div>
 </div>
 <!-- CTA Button -->
@@ -273,15 +286,33 @@
             const signinTab = document.getElementById('tab-signin');
             const signupTab = document.getElementById('tab-signup');
             const btn = document.querySelector('.shimmer-btn');
-            
+            const forgotLink = document.getElementById('forgot-link');
+            const confirmField = document.getElementById('confirm-password-field');
+
             if (type === 'signin') {
                 signinTab.className = 'flex-1 py-3 font-label-sm text-label-sm text-primary border-b-2 border-primary transition-all duration-300';
                 signupTab.className = 'flex-1 py-3 font-label-sm text-label-sm text-on-surface-variant hover:text-on-surface transition-all duration-300';
                 btn.textContent = 'Sign In';
+                forgotLink.classList.remove('hidden');
+                confirmField.classList.add('hidden');
             } else {
                 signupTab.className = 'flex-1 py-3 font-label-sm text-label-sm text-primary border-b-2 border-primary transition-all duration-300';
                 signinTab.className = 'flex-1 py-3 font-label-sm text-label-sm text-on-surface-variant hover:text-on-surface transition-all duration-300';
                 btn.textContent = 'Create Account';
+                forgotLink.classList.add('hidden');
+                confirmField.classList.remove('hidden');
+            }
+        }
+
+        function togglePassword() {
+            const input = document.getElementById('password');
+            const icon = document.getElementById('visibility-icon');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.textContent = 'visibility_off';
+            } else {
+                input.type = 'password';
+                icon.textContent = 'visibility';
             }
         }
 

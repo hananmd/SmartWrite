@@ -387,7 +387,7 @@
     </div><!-- /glass auth card -->
 
     <footer class="mt-8 text-center">
-      <p class="font-label-xs text-label-xs text-text-muted uppercase tracking-widest">Secured by SmartWrite · End-to-end encrypted</p>
+      <p class="font-label-xs text-label-xs text-text-muted uppercase tracking-widest">Secured by SmartWrite · Encrypted at rest</p>
     </footer>
   </div>
 </div><!-- /auth-view -->
@@ -689,6 +689,8 @@
     }
   }
 
+  var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
   function animateParticles() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     particles.forEach(function(p) {
@@ -706,10 +708,11 @@
 
   window.addEventListener('resize', initParticles);
   initParticles();
-  animateParticles();
+  if (!reducedMotion) animateParticles();
 
   // ── Mouse-parallax background (app view) ──
   document.addEventListener('mousemove', function(e) {
+    if (reducedMotion) return;
     var appView = document.getElementById('app-view');
     if (appView && !appView.classList.contains('d-none')) {
       var x = (e.clientX / window.innerWidth)  * 100;
