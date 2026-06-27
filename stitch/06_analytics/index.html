@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SmartWrite | Analytics Command Center</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;family=Sora:wght@600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Style Guidance Override & Custom CSS -->
+<style>
+    body {
+      background: radial-gradient(circle at 0% 0%, #0D0D1A 0%, #1A0A2E 100%);
+      min-height: 100vh;
+      color: #e3e0f4;
+      overflow-x: hidden;
+    }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.06);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-top: 1px solid rgba(255, 255, 255, 0.25);
+    }
+    .glow-violet {
+      box-shadow: 0 0 20px rgba(124, 58, 237, 0.15);
+    }
+    .glow-cyan {
+      box-shadow: 0 0 20px rgba(3, 181, 211, 0.15);
+    }
+    .springy {
+      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .springy:active {
+      transform: scale(0.95);
+    }
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+  </style>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+                  "primary": "#d2bbff",
+                  "primary-fixed": "#eaddff",
+                  "on-primary": "#3f008e",
+                  "on-tertiary-fixed": "#301400",
+                  "secondary-container": "#03b5d3",
+                  "on-tertiary": "#4f2500",
+                  "on-tertiary-container": "#ffe0cd",
+                  "success-emerald": "#10B981",
+                  "surface-container-low": "#1a1a28",
+                  "surface-dim": "#12121f",
+                  "surface-container": "#1e1e2c",
+                  "background-start": "#0D0D1A",
+                  "on-primary-fixed-variant": "#5a00c6",
+                  "inverse-surface": "#e3e0f4",
+                  "tertiary-fixed-dim": "#ffb784",
+                  "background-end": "#1A0A2E",
+                  "tertiary-container": "#a15100",
+                  "inverse-primary": "#732ee4",
+                  "surface": "#12121f",
+                  "error": "#ffb4ab",
+                  "on-primary-container": "#ede0ff",
+                  "surface-variant": "#343342",
+                  "surface-container-high": "#292937",
+                  "glass-fill": "rgba(255, 255, 255, 0.06)",
+                  "on-primary-fixed": "#25005a",
+                  "primary-container": "#7c3aed",
+                  "on-secondary-fixed": "#001f26",
+                  "on-secondary-fixed-variant": "#004e5c",
+                  "on-tertiary-fixed-variant": "#713700",
+                  "secondary": "#4cd7f6",
+                  "tertiary-fixed": "#ffdcc6",
+                  "background": "#12121f",
+                  "primary-fixed-dim": "#d2bbff",
+                  "secondary-fixed": "#acedff",
+                  "on-error": "#690005",
+                  "glass-stroke": "rgba(255, 255, 255, 0.12)",
+                  "secondary-fixed-dim": "#4cd7f6",
+                  "inverse-on-surface": "#2f2f3d",
+                  "on-background": "#e3e0f4",
+                  "on-error-container": "#ffdad6",
+                  "surface-container-highest": "#343342",
+                  "on-secondary": "#003640",
+                  "tertiary": "#ffb784",
+                  "on-secondary-container": "#00424e",
+                  "text-muted": "#9991CC",
+                  "on-surface": "#e3e0f4",
+                  "error-container": "#93000a",
+                  "surface-bright": "#383847",
+                  "surface-tint": "#d2bbff",
+                  "outline-variant": "#4a4455",
+                  "surface-container-lowest": "#0d0d1a",
+                  "on-surface-variant": "#ccc3d8",
+                  "text-primary": "#F1F0FF",
+                  "outline": "#958da1"
+          },
+          "borderRadius": {
+                  "DEFAULT": "0.25rem",
+                  "lg": "0.5rem",
+                  "xl": "0.75rem",
+                  "full": "9999px"
+          },
+          "spacing": {
+                  "container-max": "1280px",
+                  "gutter": "24px",
+                  "margin-mobile": "16px",
+                  "margin-desktop": "40px",
+                  "stack-md": "16px",
+                  "stack-lg": "32px",
+                  "stack-sm": "8px"
+          },
+          "fontFamily": {
+                  "body-lg": ["Inter"],
+                  "headline-md": ["Sora"],
+                  "body-md": ["Inter"],
+                  "display-lg": ["Sora"],
+                  "label-xs": ["Inter"],
+                  "display-lg-mobile": ["Sora"],
+                  "label-sm": ["Inter"]
+          },
+          "fontSize": {
+                  "body-lg": ["18px", {"lineHeight": "28px", "letterSpacing": "0em", "fontWeight": "400"}],
+                  "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                  "body-md": ["16px", {"lineHeight": "24px", "letterSpacing": "0em", "fontWeight": "400"}],
+                  "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                  "label-xs": ["10px", {"lineHeight": "12px", "letterSpacing": "0.15em", "fontWeight": "700"}],
+                  "display-lg-mobile": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                  "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.12em", "fontWeight": "600"}]
+          }
+        },
+      },
+    }
+  </script>
+</head>
+<body class="font-body-md text-on-surface antialiased">
+<!-- TopNavBar Implementation from JSON -->
+<nav class="bg-glass-fill backdrop-blur-3xl sticky top-0 w-full border-b border-glass-stroke shadow-[0_0_20px_rgba(124,58,237,0.1)] z-50">
+<div class="flex justify-between items-center px-margin-desktop py-4 max-w-container-max mx-auto">
+<div class="flex items-center gap-4">
+<span class="font-headline-md text-headline-md font-bold text-primary">SmartWrite</span>
+</div>
+<div class="hidden md:flex items-center gap-10">
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">Write</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">History</a>
+<!-- Analytics is Active -->
+<a class="font-body-md text-body-md text-secondary border-b-2 border-secondary pb-1 transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)]" href="#">Analytics</a>
+</div>
+<div class="flex items-center gap-6">
+<button class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors duration-200 springy">Sign Out</button>
+<div class="w-10 h-10 rounded-full border border-glass-stroke overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A futuristic professional avatar portrait of a creative director, styled in a cyberpunk neon aesthetic with electric violet and cyan rim lighting, set against a dark, blurred tech laboratory background. The character wears sleek smart-glasses that reflect digital data streams." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBVXKz5uvPz30P-D-rTbSPeYOwq9-mmmiCLArJmJ1kqaI2Jz8LZC0st2YLcxC2yV60DY5dJDLvQrgsFkGO28j8ZSEwjqGiK5GDPEcRqJ4fDlawZwwlm63ES36CFfEnu3yYNseP5iqm3OFrT6v11SdyvYnG0xK1fYTD8BAjpXuieuMhdgWki5uTpTpw5rWqqPADrdIpzei_2Si4ciZg2qReiqfB0RdBb5qbieepAQWC2lxvnpnQ15zeBFQ_7RCaUAkUOVqI-r45pEAOu"/>
+</div>
+</div>
+</div>
+</nav>
+<main class="max-w-container-max mx-auto px-margin-desktop py-stack-lg">
+<!-- Hero Header -->
+<header class="mb-12">
+<div class="flex flex-col gap-2">
+<span class="text-secondary font-label-sm text-label-sm tracking-widest uppercase">Performance Dashboard</span>
+<h1 class="font-display-lg text-display-lg text-primary">Writing Intelligence</h1>
+<p class="text-on-surface-variant max-w-2xl font-body-lg text-body-lg">
+          Dive deep into your writing patterns. SmartWrite AI analyzes every correction and tone shift to help you master your voice.
+        </p>
+</div>
+</header>
+<!-- Stat Cards 2-Column Grid -->
+<section class="grid grid-cols-1 md:grid-cols-2 gap-stack-lg mb-12">
+<!-- Total Corrections -->
+<div class="glass-card p-stack-lg rounded-xl glow-violet flex justify-between items-end relative overflow-hidden group">
+<div class="relative z-10">
+<div class="flex items-center gap-3 mb-4">
+<span class="material-symbols-outlined text-primary text-3xl">auto_fix_high</span>
+<h3 class="text-on-surface-variant font-label-sm text-label-sm">TOTAL CORRECTIONS</h3>
+</div>
+<div class="text-5xl font-display-lg text-primary tracking-tight">14,282</div>
+<p class="text-success-emerald font-label-sm text-label-sm mt-4 flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">trending_up</span> +12% from last month
+          </p>
+</div>
+<!-- Decorative SVG Shape -->
+<div class="absolute -right-8 -bottom-8 opacity-20 group-hover:scale-110 transition-transform duration-500">
+<svg class="text-primary" fill="none" height="160" stroke="currentColor" stroke-width="0.5" viewbox="0 0 24 24" width="160">
+<path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
+</svg>
+</div>
+</div>
+<!-- Most-Used Tone -->
+<div class="glass-card p-stack-lg rounded-xl glow-cyan flex justify-between items-end relative overflow-hidden group">
+<div class="relative z-10">
+<div class="flex items-center gap-3 mb-4">
+<span class="material-symbols-outlined text-secondary text-3xl">psychology</span>
+<h3 class="text-on-surface-variant font-label-sm text-label-sm">MOST-USED TONE</h3>
+</div>
+<div class="text-5xl font-display-lg text-secondary tracking-tight">Professional</div>
+<p class="text-text-muted font-label-sm text-label-sm mt-4">Predominant in 64% of projects</p>
+</div>
+<div class="absolute -right-8 -bottom-8 opacity-20 group-hover:rotate-12 transition-transform duration-500">
+<svg class="text-secondary" fill="none" height="160" stroke="currentColor" stroke-width="0.5" viewbox="0 0 24 24" width="160">
+<circle cx="12" cy="12" r="10"></circle>
+<path d="M12 6v6l4 2"></path>
+</svg>
+</div>
+</div>
+<!-- This Week -->
+<div class="glass-card p-stack-lg rounded-xl flex flex-col justify-between relative overflow-hidden group">
+<div class="relative z-10">
+<div class="flex items-center gap-3 mb-4">
+<span class="material-symbols-outlined text-on-surface-variant text-3xl">calendar_today</span>
+<h3 class="text-on-surface-variant font-label-sm text-label-sm">THIS WEEK</h3>
+</div>
+<div class="text-5xl font-display-lg text-on-surface tracking-tight">84.2 <span class="text-2xl text-on-surface-variant">k</span></div>
+<p class="text-on-surface-variant font-label-sm text-label-sm mt-4">Words generated across 12 projects</p>
+</div>
+</div>
+<!-- Avg. Daily -->
+<div class="glass-card p-stack-lg rounded-xl flex flex-col justify-between relative overflow-hidden group">
+<div class="relative z-10">
+<div class="flex items-center gap-3 mb-4">
+<span class="material-symbols-outlined text-on-surface-variant text-3xl">insights</span>
+<h3 class="text-on-surface-variant font-label-sm text-label-sm">AVG. DAILY SESSION</h3>
+</div>
+<div class="text-5xl font-display-lg text-on-surface tracking-tight">2h 45m</div>
+<p class="text-primary font-label-sm text-label-sm mt-4">Peak productivity at 10:00 AM</p>
+</div>
+</div>
+</section>
+<!-- Tone Breakdown Chart Section -->
+<section class="glass-card p-stack-lg rounded-xl mb-12">
+<div class="flex items-center justify-between mb-8">
+<div>
+<h2 class="font-headline-md text-headline-md text-primary">Tone Breakdown</h2>
+<p class="text-on-surface-variant font-body-md text-body-md">Distribution of semantic intent in your writing portfolio.</p>
+</div>
+<div class="hidden sm:flex gap-4">
+<span class="flex items-center gap-2 font-label-sm text-label-sm text-on-surface-variant">
+<span class="w-3 h-3 rounded-full bg-secondary"></span> Primary
+          </span>
+<span class="flex items-center gap-2 font-label-sm text-label-sm text-on-surface-variant">
+<span class="w-3 h-3 rounded-full bg-primary"></span> Secondary
+          </span>
+</div>
+</div>
+<div class="space-y-8">
+<!-- Professional Tone -->
+<div class="group">
+<div class="flex justify-between mb-2">
+<span class="font-label-sm text-label-sm text-on-surface uppercase tracking-widest">Professional</span>
+<span class="font-label-sm text-label-sm text-secondary">64%</span>
+</div>
+<div class="h-3 w-full bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-gradient-to-r from-secondary-container to-secondary rounded-full glow-cyan springy origin-left w-0" id="bar-prof" style="width: 64%;"></div>
+</div>
+</div>
+<!-- Academic Tone -->
+<div class="group">
+<div class="flex justify-between mb-2">
+<span class="font-label-sm text-label-sm text-on-surface uppercase tracking-widest">Academic</span>
+<span class="font-label-sm text-label-sm text-primary">42%</span>
+</div>
+<div class="h-3 w-full bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-gradient-to-r from-primary-container to-primary rounded-full glow-violet springy origin-left w-0" id="bar-acad" style="width: 42%;"></div>
+</div>
+</div>
+<!-- Casual Tone -->
+<div class="group">
+<div class="flex justify-between mb-2">
+<span class="font-label-sm text-label-sm text-on-surface uppercase tracking-widest">Casual</span>
+<span class="font-label-sm text-label-sm text-tertiary">28%</span>
+</div>
+<div class="h-3 w-full bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-gradient-to-r from-tertiary-container to-tertiary rounded-full springy origin-left w-0" id="bar-cas" style="width: 28%;"></div>
+</div>
+</div>
+<!-- Creative Tone -->
+<div class="group">
+<div class="flex justify-between mb-2">
+<span class="font-label-sm text-label-sm text-on-surface uppercase tracking-widest">Creative</span>
+<span class="font-label-sm text-label-sm text-success-emerald">15%</span>
+</div>
+<div class="h-3 w-full bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-success-emerald rounded-full springy origin-left w-0" id="bar-crea" style="width: 15%;"></div>
+</div>
+</div>
+</div>
+</section>
+<!-- Detail Bento Grid -->
+<section class="grid grid-cols-1 md:grid-cols-3 gap-stack-lg">
+<div class="md:col-span-2 glass-card rounded-xl p-stack-lg flex flex-col gap-6">
+<h3 class="font-headline-md text-headline-md text-on-surface">Writing Velocity</h3>
+<div class="h-64 flex items-end gap-2 px-2">
+<!-- Mock Chart Bars -->
+<div class="flex-1 bg-primary/20 rounded-t-lg transition-all duration-700 hover:bg-primary/40 h-[40%]"></div>
+<div class="flex-1 bg-primary/20 rounded-t-lg transition-all duration-700 hover:bg-primary/40 h-[65%]"></div>
+<div class="flex-1 bg-primary/20 rounded-t-lg transition-all duration-700 hover:bg-primary/40 h-[50%]"></div>
+<div class="flex-1 bg-secondary/30 rounded-t-lg transition-all duration-700 hover:bg-secondary/50 h-[85%] border-t-2 border-secondary"></div>
+<div class="flex-1 bg-primary/20 rounded-t-lg transition-all duration-700 hover:bg-primary/40 h-[60%]"></div>
+<div class="flex-1 bg-primary/20 rounded-t-lg transition-all duration-700 hover:bg-primary/40 h-[75%]"></div>
+<div class="flex-1 bg-primary/20 rounded-t-lg transition-all duration-700 hover:bg-primary/40 h-[95%] border-t-2 border-primary"></div>
+</div>
+<div class="flex justify-between text-on-surface-variant font-label-sm text-label-sm px-2">
+<span>MON</span><span>TUE</span><span>WED</span><span>THU</span><span>FRI</span><span>SAT</span><span>SUN</span>
+</div>
+</div>
+<div class="glass-card rounded-xl p-stack-lg flex flex-col justify-between overflow-hidden relative">
+<div class="z-10">
+<h3 class="font-headline-md text-headline-md text-on-surface mb-2">Live Insights</h3>
+<p class="text-on-surface-variant font-body-md text-body-md">AI Model current load and efficiency metrics.</p>
+</div>
+<div class="py-6 z-10">
+<div class="flex items-center gap-4 p-4 rounded-lg bg-primary-container/10 border border-primary/20 mb-4 springy cursor-pointer">
+<span class="w-2 h-2 rounded-full bg-success-emerald animate-pulse"></span>
+<div>
+<p class="font-label-sm text-label-sm text-on-surface">GPT-4 Omni Active</p>
+<p class="text-[10px] text-on-surface-variant">Lat: 42ms | Acc: 99.8%</p>
+</div>
+</div>
+<div class="flex items-center gap-4 p-4 rounded-lg bg-glass-fill border border-glass-stroke springy cursor-pointer">
+<span class="material-symbols-outlined text-primary">auto_awesome</span>
+<div>
+<p class="font-label-sm text-label-sm text-on-surface">New Suggestion Engine</p>
+<p class="text-[10px] text-on-surface-variant">v2.4.1 Ready for use</p>
+</div>
+</div>
+</div>
+<button class="w-full py-3 rounded-lg bg-gradient-to-r from-primary-container to-primary text-on-primary font-label-sm text-label-sm uppercase tracking-widest springy z-10">
+          Export Report
+        </button>
+<!-- Background light effect -->
+<div class="absolute -right-20 -bottom-20 w-64 h-64 bg-primary/10 blur-[80px] rounded-full"></div>
+</div>
+</section>
+</main>
+<!-- Interactive script for progress bar animation -->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const bars = [
+        { id: 'bar-prof', width: '64%' },
+        { id: 'bar-acad', width: '42%' },
+        { id: 'bar-cas', width: '28%' },
+        { id: 'bar-crea', width: '15%' }
+      ];
+
+      setTimeout(() => {
+        bars.forEach(bar => {
+          const el = document.getElementById(bar.id);
+          if (el) {
+            el.style.transition = 'width 1.5s cubic-bezier(0.22, 1, 0.36, 1)';
+            el.style.width = bar.width;
+          }
+        });
+      }, 300);
+    });
+  </script>
+</body></html>

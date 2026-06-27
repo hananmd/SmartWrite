@@ -216,9 +216,9 @@ document.getElementById('copy-btn').addEventListener('click', () => {
   const text = document.getElementById('corrected-text-box').textContent;
   navigator.clipboard.writeText(text).then(() => {
     const btn = document.getElementById('copy-btn');
-    btn.innerHTML = '<i class="bi bi-check2 me-1"></i>Copied!';
+    btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:18px;">check</span> Copied!';
     setTimeout(() => {
-      btn.innerHTML = '<i class="bi bi-clipboard me-1"></i>Copy';
+      btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:18px;">content_copy</span> Copy';
     }, 2000);
   }).catch(() => {});
 });
@@ -263,21 +263,30 @@ function makeHistoryItem(item) {
   const date = new Date(item.created_at).toLocaleString();
   const snip = (s, n) => esc(s.length > n ? s.slice(0, n) + '…' : s);
 
+  const toneColors = {
+    formal:       { bg: 'rgba(210,187,255,0.15)', text: '#d2bbff', border: 'rgba(210,187,255,0.25)' },
+    casual:       { bg: 'rgba(76,215,246,0.15)',  text: '#4cd7f6', border: 'rgba(76,215,246,0.25)'  },
+    friendly:     { bg: 'rgba(255,183,132,0.15)', text: '#ffb784', border: 'rgba(255,183,132,0.25)' },
+    professional: { bg: 'rgba(210,187,255,0.15)', text: '#d2bbff', border: 'rgba(210,187,255,0.25)' },
+  };
+  const c = toneColors[item.tone] || { bg:'rgba(255,255,255,0.08)', text:'#ccc3d8', border:'rgba(255,255,255,0.12)' };
+
   const div = document.createElement('div');
-  div.className = 'list-group-item py-3';
+  div.className = 'glass-card rounded-2xl p-6';
   div.innerHTML = `
-    <div class="d-flex justify-content-between align-items-center mb-2">
-      <span class="badge text-capitalize" style="background:#6366f1;">${esc(item.tone)}</span>
-      <small class="text-muted">${esc(date)}</small>
+    <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px;">
+      <span style="padding:4px 12px;border-radius:9999px;font-size:10px;letter-spacing:0.15em;font-weight:700;text-transform:uppercase;
+                   background:${c.bg};color:${c.text};border:1px solid ${c.border};">${esc(item.tone)}</span>
+      <span style="font-size:12px;color:#9991CC;">${esc(date)}</span>
     </div>
-    <div class="row g-2">
-      <div class="col-md-6">
-        <div class="text-muted small mb-1">Original</div>
-        <div class="bg-light rounded p-2 small" style="line-height:1.5;">${snip(item.original_text, 200)}</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div>
+        <p style="font-size:10px;letter-spacing:0.15em;font-weight:700;text-transform:uppercase;color:#9991CC;margin-bottom:8px;">Original</p>
+        <div style="padding:16px;border-radius:12px;background:rgba(13,13,26,0.5);border:1px solid rgba(255,255,255,0.06);font-size:14px;color:#ccc3d8;line-height:1.6;font-style:italic;">${snip(item.original_text, 200)}</div>
       </div>
-      <div class="col-md-6">
-        <div class="text-muted small mb-1">Corrected</div>
-        <div class="bg-light rounded p-2 small" style="border-left:3px solid #6366f1;line-height:1.5;">${snip(item.corrected_text, 200)}</div>
+      <div>
+        <p style="font-size:10px;letter-spacing:0.15em;font-weight:700;text-transform:uppercase;color:${c.text};margin-bottom:8px;">Corrected</p>
+        <div style="padding:16px;border-radius:12px;background:${c.bg};border:1px solid ${c.border};font-size:14px;color:#e3e0f4;line-height:1.6;">${snip(item.corrected_text, 200)}</div>
       </div>
     </div>`;
   return div;
@@ -292,8 +301,8 @@ document.getElementById('load-more-btn').addEventListener('click', () => loadHis
 
 async function loadAnalytics() {
   document.getElementById('tone-breakdown').innerHTML = `
-    <div class="text-center py-3">
-      <div class="spinner-border text-primary spinner-border-sm"></div>
+    <div style="display:flex;justify-content:center;padding:24px;">
+      <div class="spin-ring" style="width:1.5rem;height:1.5rem;border-width:3px;"></div>
     </div>`;
   document.getElementById('stat-total').textContent    = '—';
   document.getElementById('stat-7d').textContent       = '—';
@@ -310,23 +319,30 @@ async function loadAnalytics() {
 
     const breakdown = document.getElementById('tone-breakdown');
     if (!data.corrections_per_tone.length) {
-      breakdown.innerHTML = '<p class="text-muted mb-0 text-center py-2">No data yet.</p>';
+      breakdown.innerHTML = '<p style="color:#9991CC;text-align:center;padding:16px 0;">No data yet.</p>';
       return;
     }
     const max = data.corrections_per_tone[0].count;
-    breakdown.innerHTML = data.corrections_per_tone.map(tc => `
-      <div class="mb-3">
-        <div class="d-flex justify-content-between mb-1">
-          <span class="text-capitalize">${esc(tc.tone)}</span>
-          <span class="fw-semibold">${tc.count}</span>
-        </div>
-        <div class="progress" style="height:8px;">
-          <div class="progress-bar" style="background:#6366f1;width:${Math.round(tc.count/max*100)}%;"></div>
-        </div>
-      </div>`).join('');
+    const barColors = { formal:'#d2bbff', casual:'#4cd7f6', friendly:'#ffb784', professional:'#d2bbff' };
+    breakdown.innerHTML = data.corrections_per_tone.map(tc => {
+      const color = barColors[tc.tone] || '#d2bbff';
+      const pct   = Math.round(tc.count / max * 100);
+      return `
+        <div style="margin-bottom:28px;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+            <span style="font-size:12px;letter-spacing:0.12em;font-weight:600;text-transform:uppercase;color:#e3e0f4;">${esc(tc.tone)}</span>
+            <span style="font-size:12px;letter-spacing:0.12em;font-weight:600;color:${color};">${tc.count}</span>
+          </div>
+          <div style="height:10px;border-radius:9999px;background:rgba(255,255,255,0.06);overflow:hidden;">
+            <div style="height:100%;border-radius:9999px;width:${pct}%;
+                        background:linear-gradient(90deg,${color}99,${color});
+                        transition:width 1.4s cubic-bezier(0.22,1,0.36,1);"></div>
+          </div>
+        </div>`;
+    }).join('');
   } catch {
     document.getElementById('tone-breakdown').innerHTML =
-      '<p class="text-danger small mb-0">Could not load analytics.</p>';
+      '<p style="color:#ffb4ab;font-size:14px;">Could not load analytics.</p>';
   }
 }
 

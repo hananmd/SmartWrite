@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SmartWrite | Writing History</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Sora:wght@600;700&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Sora:wght@100..900&display=swap" rel="stylesheet"/>
+<!-- Tailwind Configuration -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "primary": "#d2bbff",
+                    "primary-fixed": "#eaddff",
+                    "on-primary": "#3f008e",
+                    "on-tertiary-fixed": "#301400",
+                    "secondary-container": "#03b5d3",
+                    "on-tertiary": "#4f2500",
+                    "on-tertiary-container": "#ffe0cd",
+                    "success-emerald": "#10B981",
+                    "surface-container-low": "#1a1a28",
+                    "surface-dim": "#12121f",
+                    "surface-container": "#1e1e2c",
+                    "background-start": "#0D0D1A",
+                    "on-primary-fixed-variant": "#5a00c6",
+                    "inverse-surface": "#e3e0f4",
+                    "tertiary-fixed-dim": "#ffb784",
+                    "background-end": "#1A0A2E",
+                    "tertiary-container": "#a15100",
+                    "inverse-primary": "#732ee4",
+                    "surface": "#12121f",
+                    "error": "#ffb4ab",
+                    "on-primary-container": "#ede0ff",
+                    "surface-variant": "#343342",
+                    "surface-container-high": "#292937",
+                    "glass-fill": "rgba(255, 255, 255, 0.06)",
+                    "on-primary-fixed": "#25005a",
+                    "primary-container": "#7c3aed",
+                    "on-secondary-fixed": "#001f26",
+                    "on-secondary-fixed-variant": "#004e5c",
+                    "on-tertiary-fixed-variant": "#713700",
+                    "secondary": "#4cd7f6",
+                    "tertiary-fixed": "#ffdcc6",
+                    "background": "#12121f",
+                    "primary-fixed-dim": "#d2bbff",
+                    "secondary-fixed": "#acedff",
+                    "on-error": "#690005",
+                    "glass-stroke": "rgba(255, 255, 255, 0.12)",
+                    "secondary-fixed-dim": "#4cd7f6",
+                    "inverse-on-surface": "#2f2f3d",
+                    "on-background": "#e3e0f4",
+                    "on-error-container": "#ffdad6",
+                    "surface-container-highest": "#343342",
+                    "on-secondary": "#003640",
+                    "tertiary": "#ffb784",
+                    "on-secondary-container": "#00424e",
+                    "text-muted": "#9991CC",
+                    "on-surface": "#e3e0f4",
+                    "error-container": "#93000a",
+                    "surface-bright": "#383847",
+                    "surface-tint": "#d2bbff",
+                    "outline-variant": "#4a4455",
+                    "surface-container-lowest": "#0d0d1a",
+                    "on-surface-variant": "#ccc3d8",
+                    "text-primary": "#F1F0FF",
+                    "outline": "#958da1"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "container-max": "1280px",
+                    "gutter": "24px",
+                    "margin-mobile": "16px",
+                    "margin-desktop": "40px",
+                    "stack-md": "16px",
+                    "stack-lg": "32px",
+                    "stack-sm": "8px"
+            },
+            "fontFamily": {
+                    "body-lg": ["Inter"],
+                    "headline-md": ["Sora"],
+                    "body-md": ["Inter"],
+                    "display-lg": ["Sora"],
+                    "label-xs": ["Inter"],
+                    "display-lg-mobile": ["Sora"],
+                    "label-sm": ["Inter"]
+            },
+            "fontSize": {
+                    "body-lg": ["18px", {"lineHeight": "28px", "letterSpacing": "0em", "fontWeight": "400"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "letterSpacing": "0em", "fontWeight": "400"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "label-xs": ["10px", {"lineHeight": "12px", "letterSpacing": "0.15em", "fontWeight": "700"}],
+                    "display-lg-mobile": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.12em", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background: radial-gradient(circle at 0% 0%, #0D0D1A 0%, #12121F 50%, #1A0A2E 100%);
+            min-height: 100vh;
+            color: #F1F0FF;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .glass-card:hover {
+            background: rgba(255, 255, 255, 0.07);
+            border-color: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px -10px rgba(124, 58, 237, 0.2);
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        .springy-btn {
+            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .springy-btn:active {
+            transform: scale(0.95);
+        }
+    </style>
+</head>
+<body class="font-body-md text-body-md overflow-x-hidden selection:bg-primary/30">
+<!-- TopNavBar -->
+<header class="sticky top-0 w-full bg-glass-fill backdrop-blur-3xl border-b border-glass-stroke shadow-[0_0_20px_rgba(124,58,237,0.1)] z-50">
+<div class="flex justify-between items-center px-margin-desktop py-4 max-w-container-max mx-auto">
+<div class="font-headline-md text-headline-md font-bold text-primary flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-3xl" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+                SmartWrite
+            </div>
+<nav class="hidden md:flex gap-stack-lg items-center">
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">Write</a>
+<a class="font-body-md text-body-md text-secondary border-b-2 border-secondary pb-1 transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)]" href="#">History</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">Analytics</a>
+</nav>
+<div class="flex items-center gap-4">
+<div class="hidden sm:block text-right">
+<p class="text-label-sm font-label-sm text-text-muted">Pro Account</p>
+<p class="text-label-sm font-label-sm text-on-surface">Alex Rivera</p>
+</div>
+<div class="w-10 h-10 rounded-full border border-primary/30 overflow-hidden glass-fill">
+<img class="w-full h-full object-cover" data-alt="A professional headshot of a creative professional in their early 30s with a kind expression. The lighting is soft and cinematic, with cool blue and violet highlights that match the dark, futuristic UI aesthetic of a high-end AI software. The background is slightly blurred with abstract light patterns." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDmUomdQl9LQCZxLzMsiZJwML-mHsmKory9qiXK7ZVJFXH8Z_zSgdlKYG7U4e6-i8-EtpqFwdaMNZrTgsOw6F39gEEH_DzsT2e6-emZ-bbCxMOi2SZTrTnC72-XDbA-io06OaiwX9G4DQF82zmCFr1-iWGuaqaWnyQ0P5zPU4JneCv-cXvlpB5U-34wyEqN1V0USvcerNCocOM4fcpa1wO8YUKZK4dPUjEKAi3YBBe6uk7N6g8wmHEm7RyfWVI77lxyfoxpz6C_Yhpy"/>
+</div>
+<button class="text-label-sm font-label-sm text-on-surface-variant hover:text-error transition-colors duration-200 ml-2">Sign Out</button>
+</div>
+</div>
+</header>
+<main class="max-w-container-max mx-auto px-margin-desktop py-12 relative">
+<!-- Background Atmospheric Glows -->
+<div class="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[120px] pointer-events-none -z-10"></div>
+<div class="absolute bottom-0 left-0 w-[400px] h-[400px] bg-secondary/10 rounded-full blur-[100px] pointer-events-none -z-10"></div>
+<section class="flex flex-col gap-stack-lg">
+<!-- Header Section -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+<div>
+<h1 class="font-display-lg text-display-lg mb-2 text-text-primary tracking-tight">Writing <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">History</span></h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-xl">Review and manage your past AI-enhanced drafts, refinements, and creative explorations.</p>
+</div>
+<div class="flex gap-stack-sm">
+<div class="glass-card flex items-center px-4 py-2 rounded-xl border border-glass-stroke">
+<span class="material-symbols-outlined text-on-surface-variant mr-2">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-body-md text-on-surface placeholder:text-text-muted w-48" placeholder="Search history..." type="text"/>
+</div>
+<button class="glass-card springy-btn px-4 py-2 rounded-xl flex items-center gap-2 border border-glass-stroke hover:bg-glass-fill">
+<span class="material-symbols-outlined text-on-surface-variant">filter_list</span>
+<span class="font-label-sm text-label-sm">Filter</span>
+</button>
+</div>
+</div>
+<!-- Bento Stats Section -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-gutter mb-4">
+<div class="md:col-span-1 glass-card p-6 rounded-2xl">
+<p class="text-label-xs font-label-xs text-text-muted uppercase mb-2">Total Drafts</p>
+<p class="text-headline-md font-headline-md text-primary">1,284</p>
+<div class="mt-4 flex items-center text-success-emerald text-label-sm">
+<span class="material-symbols-outlined text-sm mr-1">trending_up</span>
+                        +12% this week
+                    </div>
+</div>
+<div class="md:col-span-1 glass-card p-6 rounded-2xl">
+<p class="text-label-xs font-label-xs text-text-muted uppercase mb-2">Refinements</p>
+<p class="text-headline-md font-headline-md text-secondary">342</p>
+<div class="mt-4 flex items-center text-on-surface-variant text-label-sm">
+<span class="material-symbols-outlined text-sm mr-1">bolt</span>
+                        Active session
+                    </div>
+</div>
+<div class="md:col-span-2 glass-card p-6 rounded-2xl flex items-center justify-between relative overflow-hidden group">
+<div class="z-10">
+<p class="text-label-xs font-label-xs text-text-muted uppercase mb-2">Tokens Used</p>
+<p class="text-headline-md font-headline-md text-primary-fixed">45.2k <span class="text-body-md text-on-surface-variant font-normal">/ 100k</span></p>
+<div class="w-full h-1.5 bg-surface-container rounded-full mt-4 overflow-hidden">
+<div class="h-full bg-gradient-to-r from-primary to-secondary w-[45%]"></div>
+</div>
+</div>
+<span class="material-symbols-outlined text-7xl text-primary/10 absolute -right-4 -bottom-4 group-hover:scale-110 transition-transform duration-500">query_stats</span>
+</div>
+</div>
+<!-- History List Container -->
+<div class="flex flex-col gap-stack-md custom-scrollbar">
+<!-- History Item 1 -->
+<div class="glass-card group p-6 rounded-2xl flex flex-col md:flex-row gap-6 items-start">
+<div class="flex-shrink-0 w-12 h-12 rounded-xl glass-fill border border-glass-stroke flex items-center justify-center text-primary group-hover:bg-primary/20 transition-colors">
+<span class="material-symbols-outlined">description</span>
+</div>
+<div class="flex-grow flex flex-col gap-4">
+<div class="flex flex-wrap items-center justify-between gap-4">
+<div class="flex items-center gap-3">
+<h3 class="font-headline-md text-body-lg font-bold text-on-surface">Q3 Strategy Proposal</h3>
+<span class="px-3 py-1 rounded-full bg-primary/20 text-primary font-label-xs text-label-xs uppercase">Professional</span>
+</div>
+<span class="text-label-sm font-label-sm text-text-muted">2 hours ago</span>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+<div class="p-4 rounded-xl bg-surface-container-lowest/50 border border-glass-stroke/50">
+<p class="text-label-xs text-text-muted uppercase mb-2 flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">history</span> Original
+                                </p>
+<p class="text-body-md text-on-surface-variant italic line-clamp-2">"Our goal for the next quarter is to increase users by doing more marketing and making the app better..."</p>
+</div>
+<div class="p-4 rounded-xl bg-primary-container/10 border border-primary/20">
+<p class="text-label-xs text-primary uppercase mb-2 flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">auto_fix_high</span> Corrected
+                                </p>
+<p class="text-body-md text-on-primary-container line-clamp-2">"Our strategic objective for Q3 centers on aggressive user acquisition through multi-channel marketing and iterative product enhancements..."</p>
+</div>
+</div>
+</div>
+<div class="flex flex-row md:flex-col gap-2 self-end md:self-start">
+<button class="w-10 h-10 rounded-lg flex items-center justify-center hover:bg-glass-fill text-on-surface-variant transition-colors" title="Copy">
+<span class="material-symbols-outlined">content_copy</span>
+</button>
+<button class="w-10 h-10 rounded-lg flex items-center justify-center hover:bg-glass-fill text-on-surface-variant transition-colors" title="Edit">
+<span class="material-symbols-outlined">edit</span>
+</button>
+<button class="w-10 h-10 rounded-lg flex items-center justify-center hover:bg-error/20 text-error/80 transition-colors" title="Delete">
+<span class="material-symbols-outlined">delete</span>
+</button>
+</div>
+</div>
+<!-- History Item 2 -->
+<div class="glass-card group p-6 rounded-2xl flex flex-col md:flex-row gap-6 items-start">
+<div class="flex-shrink-0 w-12 h-12 rounded-xl glass-fill border border-glass-stroke flex items-center justify-center text-secondary group-hover:bg-secondary/20 transition-colors">
+<span class="material-symbols-outlined">alternate_email</span>
+</div>
+<div class="flex-grow flex flex-col gap-4">
+<div class="flex flex-wrap items-center justify-between gap-4">
+<div class="flex items-center gap-3">
+<h3 class="font-headline-md text-body-lg font-bold text-on-surface">Client Follow-up Email</h3>
+<span class="px-3 py-1 rounded-full bg-secondary/20 text-secondary font-label-xs text-label-xs uppercase">Empathetic</span>
+</div>
+<span class="text-label-sm font-label-sm text-text-muted">6 hours ago</span>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+<div class="p-4 rounded-xl bg-surface-container-lowest/50 border border-glass-stroke/50">
+<p class="text-label-xs text-text-muted uppercase mb-2 flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">history</span> Original
+                                </p>
+<p class="text-body-md text-on-surface-variant italic line-clamp-2">"Hey sorry we missed our call, I'm busy but want to talk soon. Let me know when you can."</p>
+</div>
+<div class="p-4 rounded-xl bg-secondary-container/10 border border-secondary/20">
+<p class="text-label-xs text-secondary uppercase mb-2 flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">auto_fix_high</span> Corrected
+                                </p>
+<p class="text-body-md text-on-secondary-container line-clamp-2">"Please accept my apologies for missing our scheduled call. My schedule has been quite demanding, but I value our partnership and would love to reconnect..."</p>
+</div>
+</div>
+</div>
+<div class="flex flex-row md:flex-col gap-2 self-end md:self-start">
+<button class="w-10 h-10 rounded-lg flex items-center justify-center hover:bg-glass-fill text-on-surface-variant transition-colors" title="Copy">
+<span class="material-symbols-outlined">content_copy</span>
+</button>
+<button class="w-10 h-10 rounded-lg flex items-center justify-center hover:bg-glass-fill text-on-surface-variant transition-colors" title="Edit">
+<span class="material-symbols-outlined">edit</span>
+</button>
+<button class="w-10 h-10 rounded-lg flex items-center justify-center hover:bg-error/20 text-error/80 transition-colors" title="Delete">
+<span class="material-symbols-outlined">delete</span>
+</button>
+</div>
+</div>
+<!-- History Item 3 -->
+<div class="glass-card group p-6 rounded-2xl flex flex-col md:flex-row gap-6 items-start">
+<div class="flex-shrink-0 w-12 h-12 rounded-xl glass-fill border border-glass-stroke flex items-center justify-center text-tertiary group-hover:bg-tertiary/20 transition-colors">
+<span class="material-symbols-outlined">campaign</span>
+</div>
+<div class="flex-grow flex flex-col gap-4">
+<div class="flex flex-wrap items-center justify-between gap-4">
+<div class="flex items-center gap-3">
+<h3 class="font-headline-md text-body-lg font-bold text-on-surface">Product Launch Tagline</h3>
+<span class="px-3 py-1 rounded-full bg-tertiary/20 text-tertiary font-label-xs text-label-xs uppercase">Creative</span>
+</div>
+<span class="text-label-sm font-label-sm text-text-muted">Yesterday</span>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+<div class="p-4 rounded-xl bg-surface-container-lowest/50 border border-glass-stroke/50">
+<p class="text-label-xs text-text-muted uppercase mb-2 flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">history</span> Original
+                                </p>
+<p class="text-body-md text-on-surface-variant italic line-clamp-2">"The best tool for writing stuff quickly with ai."</p>
+</div>
+<div class="p-4 rounded-xl bg-tertiary-container/10 border border-tertiary/20">
+<p class="text-label-xs text-tertiary uppercase mb-2 flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">auto_fix_high</span> Corrected
+                                </p>
+<p class="text-body-md text-on-tertiary-container line-clamp-2">"Unleash the speed of thought. The premier ecosystem for frictionless AI-powered authorship."</p>
+</div>
+</div>
+</div>
+<div class="flex flex-row md:flex-col gap-2 self-end md:self-start">
+<button class="w-10 h-10 rounded-lg flex items-center justify-center hover:bg-glass-fill text-on-surface-variant transition-colors" title="Copy">
+<span class="material-symbols-outlined">content_copy</span>
+</button>
+<button class="w-10 h-10 rounded-lg flex items-center justify-center hover:bg-glass-fill text-on-surface-variant transition-colors" title="Edit">
+<span class="material-symbols-outlined">edit</span>
+</button>
+<button class="w-10 h-10 rounded-lg flex items-center justify-center hover:bg-error/20 text-error/80 transition-colors" title="Delete">
+<span class="material-symbols-outlined">delete</span>
+</button>
+</div>
+</div>
+<!-- History Item 4 -->
+<div class="glass-card group p-6 rounded-2xl flex flex-col md:flex-row gap-6 items-start opacity-75">
+<div class="flex-shrink-0 w-12 h-12 rounded-xl glass-fill border border-glass-stroke flex items-center justify-center text-on-surface-variant group-hover:bg-glass-stroke transition-colors">
+<span class="material-symbols-outlined">article</span>
+</div>
+<div class="flex-grow flex flex-col gap-4">
+<div class="flex flex-wrap items-center justify-between gap-4">
+<div class="flex items-center gap-3">
+<h3 class="font-headline-md text-body-lg font-bold text-on-surface">Blog Post: AI Trends</h3>
+<span class="px-3 py-1 rounded-full bg-glass-fill text-on-surface-variant border border-glass-stroke font-label-xs text-label-xs uppercase">Informative</span>
+</div>
+<span class="text-label-sm font-label-sm text-text-muted">2 days ago</span>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+<div class="p-4 rounded-xl bg-surface-container-lowest/50 border border-glass-stroke/50">
+<p class="text-label-xs text-text-muted uppercase mb-2 flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">history</span> Original
+                                </p>
+<p class="text-body-md text-on-surface-variant italic line-clamp-2">"Many people think AI is coming for jobs but it might actually just help us work better."</p>
+</div>
+<div class="p-4 rounded-xl bg-glass-fill border border-glass-stroke">
+<p class="text-label-xs text-on-surface-variant uppercase mb-2 flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">auto_fix_high</span> Corrected
+                                </p>
+<p class="text-body-md text-on-surface-variant line-clamp-2">"While industrial anxieties regarding automation persist, contemporary discourse suggests AI will serve as a powerful cognitive augment..."</p>
+</div>
+</div>
+</div>
+<div class="flex flex-row md:flex-col gap-2 self-end md:self-start">
+<button class="w-10 h-10 rounded-lg flex items-center justify-center hover:bg-glass-fill text-on-surface-variant transition-colors" title="Copy">
+<span class="material-symbols-outlined">content_copy</span>
+</button>
+<button class="w-10 h-10 rounded-lg flex items-center justify-center hover:bg-glass-fill text-on-surface-variant transition-colors" title="Edit">
+<span class="material-symbols-outlined">edit</span>
+</button>
+<button class="w-10 h-10 rounded-lg flex items-center justify-center hover:bg-error/20 text-error/80 transition-colors" title="Delete">
+<span class="material-symbols-outlined">delete</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Footer / Load More -->
+<div class="flex flex-col items-center gap-stack-md py-12">
+<button class="px-8 py-3 rounded-full bg-glass-fill border border-glass-stroke font-label-sm text-label-sm tracking-widest uppercase hover:bg-glass-stroke transition-all duration-300 springy-btn">
+                    Load Older Entries
+                </button>
+<p class="text-label-xs font-label-xs text-text-muted">Showing 4 of 1,284 entries</p>
+</div>
+</section>
+</main>
+<!-- SideNavBar (Mobile Bottom Bar) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full bg-glass-fill backdrop-blur-2xl border-t border-glass-stroke py-3 flex justify-around items-center z-50">
+<button class="flex flex-col items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-label-xs">Home</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined">description</span>
+<span class="text-label-xs">Templates</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">history</span>
+<span class="text-label-xs">History</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-label-xs">Settings</span>
+</button>
+</nav>
+<script>
+        // Micro-interactions and atmospheric effects
+        document.addEventListener('mousemove', (e) => {
+            const x = (e.clientX / window.innerWidth) * 100;
+            const y = (e.clientY / window.innerHeight) * 100;
+            document.body.style.background = `radial-gradient(circle at ${x}% ${y}%, #0D0D1A 0%, #12121F 60%, #1A0A2E 100%)`;
+        });
+
+        // Button feedback
+        const buttons = document.querySelectorAll('.springy-btn');
+        buttons.forEach(btn => {
+            btn.addEventListener('mousedown', () => btn.classList.add('scale-95'));
+            btn.addEventListener('mouseup', () => btn.classList.remove('scale-95'));
+            btn.addEventListener('mouseleave', () => btn.classList.remove('scale-95'));
+        });
+    </script>
+</body></html>
