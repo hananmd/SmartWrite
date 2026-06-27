@@ -1,0 +1,64 @@
+# Render Blueprint for SmartWrite
+# Docs: https://render.com/docs/blueprint-spec
+#
+# One-time deploy steps (do these in order):
+#   1. Push this file to GitHub.
+#   2. In the Render dashboard → New → Blueprint, point it at this repo.
+#      Render will create the web service and the Postgres database automatically.
+#   3. In the web service's Environment settings, fill in the two secrets
+#      that must be set manually (Render shows them as "Sync Required"):
+#
+#        GROQ_API_KEY        — copy from console.groq.com/keys
+#
+#        HISTORY_ENCRYPTION_KEY — generate a Fernet key once, store it safely:
+#          python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
+#
+#   4. Trigger a manual deploy (or push a commit). Alembic migrations run
+#      automatically inside the start command before uvicorn boots.
+#
+# Operational reminder: Render free Postgres auto-deletes 30 days after creation.
+# Recreate the add-on and rerun `alembic upgrade head` before that deadline.
+
+services:
+  - type: web
+    name: smartwrite-api
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    # Migrations run before the server starts so the schema is always current.
+    startCommand: alembic upgrade head && uvicorn backend.app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      # Render injects the Postgres connection string automatically.
+      # config.py rewrites postgres:// / postgresql:// → postgresql+asyncpg://
+      # so SQLAlchemy's asyncpg driver is used regardless of the prefix Render sends.
+      - key: DATABASE_URL
+        fromDatabase:
+          name: smartwrite-db
+          property: connectionString
+
+      # false in production — keeps the auth cookie Secure and suppresses debug logs.
+      - key: DEBUG
+        value: false
+
+      # Render generates a 64-char random hex string; satisfies the ≥32-char validator.
+      - key: SECRET_KEY
+        generateValue: true
+
+      # Set manually in the Render dashboard after the Blueprint creates the service.
+      - key: GROQ_API_KEY
+        sync: false
+
+      - key: GROQ_MODEL
+        value: llama-3.3-70b-versatile
+
+      # Must be a valid Fernet key (URL-safe base64, 44 chars).
+      # generateValue would produce a non-Fernet string — set this manually.
+      - key: HISTORY_ENCRYPTION_KEY
+        sync: false
+
+databases:
+  - name: smartwrite-db
+    plan: free
+    databaseName: smartwrite
+    user: smartwrite

@@ -38,6 +38,17 @@ class Settings(BaseSettings):
     groq_model: str = "llama-3.3-70b-versatile"
     history_encryption_key: str = ""
 
+    @field_validator("database_url")
+    @classmethod
+    def fix_async_driver(cls, v: str) -> str:
+        # Render Postgres connection strings arrive as postgres:// or postgresql://.
+        # SQLAlchemy's asyncpg driver requires the postgresql+asyncpg:// scheme.
+        if v.startswith("postgres://"):
+            return "postgresql+asyncpg://" + v[len("postgres://"):]
+        if v.startswith("postgresql://"):
+            return "postgresql+asyncpg://" + v[len("postgresql://"):]
+        return v
+
     @field_validator("secret_key")
     @classmethod
     def secret_key_must_be_strong(cls, v: str) -> str:
