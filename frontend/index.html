@@ -1,290 +1,728 @@
 <!DOCTYPE html>
-<html lang="en">
+<html class="dark" lang="en">
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>SmartWrite</title>
   <link rel="manifest" href="./manifest.json"/>
   <link rel="icon" href="./icon.svg" type="image/svg+xml"/>
-  <!-- Apple touch icon for iOS/home screen -->
   <link rel="apple-touch-icon" href="./icon.png"/>
-  <link rel="stylesheet"
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"/>
-  <link rel="stylesheet"
-        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"/>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+  <!-- Google Fonts: Sora + Inter + Material Symbols -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Sora:wght@600;700;800&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+
+  <!-- Liquid Glass design tokens -->
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary":                  "#d2bbff",
+            "primary-fixed":            "#eaddff",
+            "primary-fixed-dim":        "#d2bbff",
+            "primary-container":        "#7c3aed",
+            "on-primary":               "#3f008e",
+            "on-primary-fixed":         "#25005a",
+            "on-primary-fixed-variant": "#5a00c6",
+            "on-primary-container":     "#ede0ff",
+            "inverse-primary":          "#732ee4",
+            "secondary":                "#4cd7f6",
+            "secondary-container":      "#03b5d3",
+            "secondary-fixed":          "#acedff",
+            "secondary-fixed-dim":      "#4cd7f6",
+            "on-secondary":             "#003640",
+            "on-secondary-fixed":       "#001f26",
+            "on-secondary-fixed-variant":"#004e5c",
+            "on-secondary-container":   "#00424e",
+            "tertiary":                 "#ffb784",
+            "tertiary-container":       "#a15100",
+            "tertiary-fixed":           "#ffdcc6",
+            "tertiary-fixed-dim":       "#ffb784",
+            "on-tertiary":              "#4f2500",
+            "on-tertiary-fixed":        "#301400",
+            "on-tertiary-fixed-variant":"#713700",
+            "on-tertiary-container":    "#ffe0cd",
+            "error":                    "#ffb4ab",
+            "error-container":          "#93000a",
+            "on-error":                 "#690005",
+            "on-error-container":       "#ffdad6",
+            "background":               "#12121f",
+            "background-start":         "#0D0D1A",
+            "background-end":           "#1A0A2E",
+            "on-background":            "#e3e0f4",
+            "surface":                  "#12121f",
+            "surface-dim":              "#12121f",
+            "surface-bright":           "#383847",
+            "surface-variant":          "#343342",
+            "surface-container-lowest": "#0d0d1a",
+            "surface-container-low":    "#1a1a28",
+            "surface-container":        "#1e1e2c",
+            "surface-container-high":   "#292937",
+            "surface-container-highest":"#343342",
+            "surface-tint":             "#d2bbff",
+            "on-surface":               "#e3e0f4",
+            "on-surface-variant":       "#ccc3d8",
+            "inverse-surface":          "#e3e0f4",
+            "inverse-on-surface":       "#2f2f3d",
+            "outline":                  "#958da1",
+            "outline-variant":          "#4a4455",
+            "glass-fill":               "rgba(255,255,255,0.06)",
+            "glass-stroke":             "rgba(255,255,255,0.12)",
+            "text-primary":             "#F1F0FF",
+            "text-muted":               "#9991CC",
+            "success-emerald":          "#10B981",
+          },
+          borderRadius: {
+            "DEFAULT": "0.5rem",
+            "lg":      "0.75rem",
+            "xl":      "1rem",
+            "2xl":     "1.5rem",
+            "full":    "9999px",
+          },
+          fontFamily: {
+            "sora":  ["Sora", "sans-serif"],
+            "inter": ["Inter", "sans-serif"],
+          },
+          fontSize: {
+            "display-lg":        ["48px", { lineHeight:"56px", letterSpacing:"-0.02em", fontWeight:"700" }],
+            "display-lg-mobile": ["32px", { lineHeight:"40px", letterSpacing:"-0.02em", fontWeight:"700" }],
+            "headline-md":       ["24px", { lineHeight:"32px", letterSpacing:"-0.01em", fontWeight:"600" }],
+            "body-lg":           ["18px", { lineHeight:"28px", letterSpacing:"0em",     fontWeight:"400" }],
+            "body-md":           ["16px", { lineHeight:"24px", letterSpacing:"0em",     fontWeight:"400" }],
+            "label-sm":          ["12px", { lineHeight:"16px", letterSpacing:"0.12em",  fontWeight:"600" }],
+            "label-xs":          ["10px", { lineHeight:"12px", letterSpacing:"0.15em",  fontWeight:"700" }],
+          },
+          maxWidth: { "container-max": "1280px" },
+        }
+      }
+    }
+  </script>
+
   <style>
-    body { background: #f8f9fa; }
+    /* ── Preserve app.js d-none toggle ── */
+    .d-none { display: none !important; }
 
-    /* Loading overlay — shown until JS resolves auth state */
-    #loading-overlay {
-      position: fixed; inset: 0;
-      display: flex; align-items: center; justify-content: center;
-      background: #fff; z-index: 9999;
-    }
-
-    /* Auth view */
-    #auth-view {
+    /* ── Base ── */
+    body {
+      background: radial-gradient(circle at top left, #1A0A2E 0%, #0D0D1A 100%);
       min-height: 100vh;
-      display: flex; align-items: center; justify-content: center;
-      padding: 1rem;
+      font-family: "Inter", sans-serif;
+      color: #F1F0FF;
+      overflow-x: hidden;
     }
-    .auth-card { width: 100%; max-width: 420px; }
 
-    /* Correction result */
-    #corrected-text-box {
-      background: #f0f0ff;
-      border-radius: 0.5rem;
-      padding: 1rem;
-      white-space: pre-wrap;
-      font-family: inherit;
-      line-height: 1.6;
+    /* ── Material Symbols ── */
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
     }
-    .result-tone-badge { font-size: 0.72rem; }
-    /* larger spinner sizing moved from inline styles */
-    .spinner-lg { width: 3rem; height: 3rem; }
-    .brand-title { color: #6366f1; }
+
+    /* ── Glass utilities ── */
+    .glass-card {
+      background: rgba(255,255,255,0.04);
+      -webkit-backdrop-filter: blur(24px);
+      backdrop-filter: blur(24px);
+      border: 1px solid rgba(255,255,255,0.08);
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .glass-card:hover {
+      background: rgba(255,255,255,0.07);
+      border-color: rgba(255,255,255,0.15);
+    }
+    .glass-panel {
+      background: rgba(255,255,255,0.06);
+      -webkit-backdrop-filter: blur(24px);
+      backdrop-filter: blur(24px);
+      border: 1px solid rgba(255,255,255,0.12);
+      box-shadow: 0 0 40px rgba(124,58,237,0.1);
+    }
+    .glass-input {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      color: #e3e0f4;
+      outline: none;
+      transition: all 0.3s;
+    }
+    .glass-input::placeholder { color: rgba(149,141,161,0.6); }
+    .glass-input:hover { background: rgba(255,255,255,0.10); }
+    .glass-input:focus { background: rgba(255,255,255,0.10); border-color: #4cd7f6; box-shadow: 0 0 15px rgba(124,58,237,0.4); }
+
+    /* ── Shimmer CTA button ── */
+    .shimmer-btn {
+      background: linear-gradient(135deg, #7c3aed 0%, #03b5d3 100%);
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .shimmer-btn::after {
+      content: '';
+      position: absolute;
+      top: -50%; left: -50%;
+      width: 200%; height: 200%;
+      background: linear-gradient(45deg, transparent, rgba(255,255,255,0.2), transparent);
+      transform: rotate(45deg);
+      animation: shimmer 3s infinite;
+    }
+    @keyframes shimmer {
+      0%   { transform: translateX(-100%) rotate(45deg); }
+      100% { transform: translateX(100%)  rotate(45deg); }
+    }
+
+    /* ── Nav tab links (toggled by app.js via .active) ── */
+    .nav-link {
+      color: #9991CC;
+      padding-bottom: 4px;
+      border-bottom: 2px solid transparent;
+      transition: color 0.2s, border-color 0.2s;
+      background: none;
+      cursor: pointer;
+    }
+    .nav-link:hover { color: #d2bbff; }
+    .nav-link.active { color: #d2bbff; border-bottom-color: #7c3aed; }
+
+    /* ── Tone pills ── */
+    .tone-pill {
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.06);
+      color: #9991CC;
+      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(12px);
+      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+      cursor: pointer;
+    }
+    .tone-pill:hover { border-color: #d2bbff; color: #d2bbff; }
+    .tone-pill.active-pill {
+      background: rgba(124,58,237,0.2);
+      border-color: #d2bbff;
+      color: #d2bbff;
+    }
+
+    /* ── Springy micro-interaction ── */
+    .springy { transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1); }
+    .springy:active { transform: scale(0.95); }
+
+    /* ── Custom scrollbar ── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
+
+    /* ── Loading spinner (CSS only, no Bootstrap) ── */
+    .spin-ring {
+      display: inline-block;
+      width: 1rem; height: 1rem;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Auth tab active (same .nav-link rule, but label-sm style) ── */
+    #login-tab-btn, #register-tab-btn {
+      font-size: 12px; letter-spacing: 0.12em; font-weight: 600;
+      padding: 12px 0;
+    }
+
+    /* ── Named classes to replace inline styles ── */
+
+    /* Loading overlay background */
+    .bg-loading {
+      background: radial-gradient(circle at top left, #1A0A2E 0%, #0D0D1A 100%);
+    }
+
+    /* Sticky nav glass background (with webkit prefix for Safari) */
+    .nav-glass {
+      background: rgba(255,255,255,0.06);
+      -webkit-backdrop-filter: blur(24px);
+      backdrop-filter: blur(24px);
+    }
+
+    /* Brand icon container gradient */
+    .icon-gradient-bg {
+      background: linear-gradient(135deg, #7c3aed, #03b5d3);
+    }
+
+    /* Filled Material icon variant */
+    .icon-fill {
+      font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+
+    /* Atmospheric glow blobs */
+    .glow-violet-blob {
+      filter: blur(80px);
+      opacity: 0.12;
+    }
+    .glow-cyan-blob {
+      filter: blur(80px);
+      opacity: 0.12;
+    }
+    .glow-history-violet {
+      background: rgba(210,187,255,0.07);
+      filter: blur(100px);
+    }
+    .glow-history-cyan {
+      background: rgba(76,215,246,0.07);
+      filter: blur(80px);
+    }
+
+    /* Gradient text (purple → cyan) */
+    .text-gradient {
+      background: linear-gradient(90deg, #d2bbff, #4cd7f6);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      color: transparent;
+    }
+
+    /* Stat card glows */
+    .glow-violet-card { box-shadow: 0 0 20px rgba(124,58,237,0.15); }
+    .glow-cyan-card   { box-shadow: 0 0 20px rgba(76,215,246,0.15); }
   </style>
 </head>
-<body>
+<body class="antialiased selection:bg-[rgba(124,58,237,0.3)]">
 
-<!-- Loading spinner (hidden after auth check) -->
-<div id="loading-overlay">
+<!-- ═══════════════════════════════════════════════════
+     LOADING OVERLAY
+════════════════════════════════════════════════════ -->
+<div id="loading-overlay" class="bg-loading fixed inset-0 z-[9999] flex items-center justify-center">
   <div class="text-center">
-    <div class="spinner-border text-primary mb-3 spinner-lg"></div>
-    <div class="text-muted small">Loading SmartWrite…</div>
+    <div class="w-12 h-12 rounded-full border-2 border-[rgba(124,58,237,0.3)] border-t-[#7c3aed] animate-spin mx-auto mb-4"></div>
+    <p class="text-label-sm font-label-sm text-text-muted uppercase tracking-widest">Loading SmartWrite…</p>
   </div>
 </div>
 
-<!-- ===== AUTH VIEW ===== -->
-<div id="auth-view" class="d-none">
-  <div class="auth-card">
-    <div class="text-center mb-4">
-      <img src="./icon.svg" width="60" height="60" alt="SmartWrite logo"/>
-      <h2 class="mt-2 fw-bold" style="color:#6366f1;">SmartWrite</h2>
-      <p class="text-muted small mb-0">AI-powered writing assistant</p>
-    </div>
-    <div class="card shadow-sm">
-      <div class="card-body p-4">
-        <div class="nav nav-tabs mb-4" role="tablist">
-          <div class="nav-item flex-fill text-center">
-            <button id="login-tab-btn" class="nav-link active w-100" type="button" role="tab" aria-controls="login-pane" aria-selected="true" data-bs-toggle="tab" data-bs-target="#login-pane">
-              Sign In
-            </button>
-          </div>
-          <div class="nav-item flex-fill text-center">
-            <button id="register-tab-btn" class="nav-link w-100" type="button" role="tab" aria-controls="register-pane" aria-selected="false" data-bs-toggle="tab" data-bs-target="#register-pane">
-              Sign Up
-            </button>
-          </div>
-        </div>
+<!-- Floating particle canvas (auth screen atmosphere) -->
+<canvas id="particleCanvas" class="fixed inset-0 pointer-events-none z-0"></canvas>
 
-        <div id="auth-error" class="alert alert-danger d-none py-2 small" role="alert"></div>
+<!-- ═══════════════════════════════════════════════════
+     AUTH VIEW
+════════════════════════════════════════════════════ -->
+<div id="auth-view" class="d-none relative z-10 min-h-screen flex items-center justify-center px-6 py-12">
+  <div class="w-full max-w-md">
 
-        <div class="tab-content">
-          <!-- Login -->
-          <div class="tab-pane fade show active" id="login-pane" role="tabpanel" aria-labelledby="login-tab-btn">
-            <form id="login-form" novalidate>
-              <div class="mb-3">
-                <label for="login-email" class="form-label">Email</label>
-                <input id="login-email" type="email" class="form-control"
-                       placeholder="you@example.com" autocomplete="email" required/>
-              </div>
-              <div class="mb-3">
-                <label for="login-password" class="form-label">Password</label>
-                <input id="login-password" type="password" class="form-control"
-                       placeholder="••••••••" autocomplete="current-password" required/>
-              </div>
-              <button id="login-btn" type="submit" class="btn btn-primary w-100">
-                <span id="login-spinner" class="spinner-border spinner-border-sm d-none me-1"></span>
-                Sign In
-              </button>
-            </form>
-          </div>
-
-          <!-- Register -->
-          <div class="tab-pane fade" id="register-pane" role="tabpanel" aria-labelledby="register-tab-btn">
-            <form id="register-form" novalidate>
-              <div class="mb-3">
-                <label for="reg-email" class="form-label">Email</label>
-                <input id="reg-email" type="email" class="form-control"
-                       placeholder="you@example.com" autocomplete="email" required/>
-              </div>
-              <div class="mb-3">
-                <label for="reg-password" class="form-label">Password</label>
-                <input id="reg-password" type="password" class="form-control"
-                       placeholder="At least 8 characters" autocomplete="new-password" required/>
-              </div>
-              <button id="register-btn" type="submit" class="btn btn-primary w-100">
-                <span id="register-spinner" class="spinner-border spinner-border-sm d-none me-1"></span>
-                Create Account
-              </button>
-            </form>
-          </div>
-        </div>
+    <!-- Logo section -->
+    <div class="flex flex-col items-center mb-10">
+      <div class="relative mb-4">
+        <img src="./icon.svg" width="80" height="80" alt="SmartWrite logo" class="relative z-10"/>
+        <div class="absolute inset-0 bg-[#d2bbff] blur-2xl rounded-full opacity-20 animate-pulse scale-150"></div>
       </div>
+      <h1 class="font-sora text-display-lg-mobile text-primary tracking-tight">SmartWrite</h1>
+      <p class="text-text-muted text-body-md mt-2">Next-gen AI Writing Suite</p>
     </div>
-  </div>
-</div>
 
-<!-- ===== APP VIEW ===== -->
+    <!-- Glass auth card -->
+    <div class="glass-panel rounded-2xl p-8 hover:shadow-[0_0_50px_rgba(124,58,237,0.15)] transition-shadow duration-500">
+
+      <!-- Tab switcher -->
+      <div class="flex border-b border-[rgba(255,255,255,0.12)] mb-8" role="tablist">
+        <button id="login-tab-btn" type="button" role="tab"
+                class="nav-link active flex-1 text-center"
+                onclick="authSwitchTab('login')">SIGN IN</button>
+        <button id="register-tab-btn" type="button" role="tab"
+                class="nav-link flex-1 text-center"
+                onclick="authSwitchTab('register')">SIGN UP</button>
+      </div>
+
+      <!-- Auth error -->
+      <div id="auth-error" class="d-none mb-6 px-4 py-3 rounded-lg bg-[rgba(255,180,171,0.1)] border border-[rgba(255,180,171,0.3)] text-error text-body-md"></div>
+
+      <!-- ── Sign In form ── -->
+      <div id="login-pane">
+        <form id="login-form" novalidate class="space-y-6">
+          <div class="space-y-2">
+            <label class="block font-label-sm text-label-sm text-text-muted uppercase tracking-widest ml-1" for="login-email">Email Address</label>
+            <div class="relative group">
+              <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline text-lg transition-colors group-focus-within:text-secondary pointer-events-none">mail</span>
+              <input id="login-email" type="email" class="glass-input w-full rounded-lg py-3.5 pl-12 pr-4"
+                     placeholder="you@example.com" autocomplete="email" required/>
+            </div>
+          </div>
+          <div class="space-y-2">
+            <label class="block font-label-sm text-label-sm text-text-muted uppercase tracking-widest ml-1" for="login-password">Password</label>
+            <div class="relative group">
+              <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline text-lg transition-colors group-focus-within:text-secondary pointer-events-none">lock</span>
+              <input id="login-password" type="password" class="glass-input w-full rounded-lg py-3.5 pl-12 pr-4"
+                     placeholder="••••••••" autocomplete="current-password" required/>
+            </div>
+          </div>
+          <button id="login-btn" type="submit"
+                  class="shimmer-btn w-full py-4 rounded-xl font-sora text-headline-md text-white font-bold flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-[0.98]">
+            <span id="login-spinner" class="d-none spin-ring"></span>
+            Sign In
+          </button>
+        </form>
+      </div>
+
+      <!-- ── Sign Up form ── -->
+      <div id="register-pane" class="d-none">
+        <form id="register-form" novalidate class="space-y-6">
+          <div class="space-y-2">
+            <label class="block font-label-sm text-label-sm text-text-muted uppercase tracking-widest ml-1" for="reg-email">Email Address</label>
+            <div class="relative group">
+              <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline text-lg transition-colors group-focus-within:text-secondary pointer-events-none">mail</span>
+              <input id="reg-email" type="email" class="glass-input w-full rounded-lg py-3.5 pl-12 pr-4"
+                     placeholder="you@example.com" autocomplete="email" required/>
+            </div>
+          </div>
+          <div class="space-y-2">
+            <label class="block font-label-sm text-label-sm text-text-muted uppercase tracking-widest ml-1" for="reg-password">Password</label>
+            <div class="relative group">
+              <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline text-lg transition-colors group-focus-within:text-secondary pointer-events-none">lock</span>
+              <input id="reg-password" type="password" class="glass-input w-full rounded-lg py-3.5 pl-12 pr-4"
+                     placeholder="At least 8 characters" autocomplete="new-password" required/>
+            </div>
+          </div>
+          <button id="register-btn" type="submit"
+                  class="shimmer-btn w-full py-4 rounded-xl font-sora text-headline-md text-white font-bold flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-[0.98]">
+            <span id="register-spinner" class="d-none spin-ring"></span>
+            Create Account
+          </button>
+        </form>
+      </div>
+
+    </div><!-- /glass auth card -->
+
+    <footer class="mt-8 text-center">
+      <p class="font-label-xs text-label-xs text-text-muted uppercase tracking-widest">Secured by SmartWrite · Encrypted at rest</p>
+    </footer>
+  </div>
+</div><!-- /auth-view -->
+
+
+<!-- ═══════════════════════════════════════════════════
+     APP VIEW
+════════════════════════════════════════════════════ -->
 <div id="app-view" class="d-none">
 
-  <!-- Navbar -->
-  <nav class="navbar navbar-expand-lg navbar-dark" style="background:#6366f1;">
-    <div class="container-fluid">
-      <span class="navbar-brand fw-bold d-flex align-items-center gap-2">
-        <img src="./icon.svg" width="28" height="28" alt="SmartWrite logo"/>SmartWrite
-      </span>
-      <div class="ms-auto d-flex align-items-center gap-3">
-        <span class="text-white-50 small d-none d-md-inline" id="user-email"></span>
-        <button id="logout-btn" type="button" class="btn btn-outline-light btn-sm">
-          <i class="bi bi-box-arrow-right me-1"></i>Sign Out
+  <!-- Atmospheric glow accents -->
+  <div class="glow-violet-blob fixed top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary rounded-full pointer-events-none -z-10"></div>
+  <div class="glow-cyan-blob fixed bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-secondary rounded-full pointer-events-none -z-10"></div>
+
+  <!-- ───── Sticky nav ───── -->
+  <nav class="nav-glass sticky top-0 w-full z-50 border-b border-[rgba(255,255,255,0.12)] shadow-[0_0_20px_rgba(124,58,237,0.1)]">
+    <div class="flex justify-between items-center px-6 md:px-10 py-4 max-w-[1280px] mx-auto">
+
+      <!-- Brand -->
+      <div class="flex items-center gap-2 flex-shrink-0">
+        <div class="icon-gradient-bg w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0">
+          <span class="material-symbols-outlined icon-fill text-white text-[18px]">edit_square</span>
+        </div>
+        <span class="font-sora text-headline-md font-bold text-primary">SmartWrite</span>
+      </div>
+
+      <!-- Desktop tab navigation (event-delegated by app.js) -->
+      <div id="main-tabs" class="hidden md:flex items-center gap-8">
+        <button id="main-tab-write-btn"     type="button" class="nav-link active text-body-md" data-tab="write">Write</button>
+        <button id="main-tab-history-btn"   type="button" class="nav-link text-body-md"        data-tab="history">History</button>
+        <button id="main-tab-analytics-btn" type="button" class="nav-link text-body-md"        data-tab="analytics">Analytics</button>
+      </div>
+
+      <!-- User / logout -->
+      <div class="flex items-center gap-3 flex-shrink-0">
+        <span id="user-email" class="hidden lg:block font-label-sm text-label-sm text-text-muted truncate max-w-[180px]"></span>
+        <button id="logout-btn" type="button"
+                class="springy font-label-sm text-label-sm text-on-surface-variant hover:text-error transition-colors duration-200 whitespace-nowrap">
+          Sign Out
         </button>
       </div>
     </div>
+
+    <!-- Mobile tab bar (inside nav, below header row) -->
+    <div class="flex md:hidden border-t border-[rgba(255,255,255,0.08)]">
+      <button type="button" data-tab="write"
+              class="nav-link active flex-1 py-2 flex flex-col items-center gap-0.5 font-label-xs text-label-xs"
+              onclick="document.getElementById('main-tab-write-btn').click()">
+        <span class="material-symbols-outlined text-[20px]">edit_square</span>Write
+      </button>
+      <button type="button" data-tab="history"
+              class="nav-link flex-1 py-2 flex flex-col items-center gap-0.5 font-label-xs text-label-xs"
+              onclick="document.getElementById('main-tab-history-btn').click()">
+        <span class="material-symbols-outlined text-[20px]">history</span>History
+      </button>
+      <button type="button" data-tab="analytics"
+              class="nav-link flex-1 py-2 flex flex-col items-center gap-0.5 font-label-xs text-label-xs"
+              onclick="document.getElementById('main-tab-analytics-btn').click()">
+        <span class="material-symbols-outlined text-[20px]">bar_chart</span>Analytics
+      </button>
+    </div>
   </nav>
 
-  <div class="container py-4" style="max-width: 880px;">
 
-    <!-- Main tabs -->
-    <div class="nav nav-pills mb-4" id="main-tabs" role="tablist">
-      <button id="main-tab-write-btn" class="nav-link active" type="button" role="tab" aria-controls="tab-write" aria-selected="true" data-tab="write">
-        <i class="bi bi-pencil-square me-1"></i>Write
-      </button>
-      <button id="main-tab-history-btn" class="nav-link" type="button" role="tab" aria-controls="tab-history" aria-selected="false" data-tab="history">
-        <i class="bi bi-clock-history me-1"></i>History
-      </button>
-      <button id="main-tab-analytics-btn" class="nav-link" type="button" role="tab" aria-controls="tab-analytics" aria-selected="false" data-tab="analytics">
-        <i class="bi bi-bar-chart-line me-1"></i>Analytics
+  <!-- ═══════════════════════════════════════════════════
+       WRITE TAB
+  ════════════════════════════════════════════════════ -->
+  <div id="tab-write" class="max-w-[900px] mx-auto px-4 md:px-10 py-12 pb-24 md:pb-12">
+
+    <header class="mb-10 text-center">
+      <h1 class="font-sora text-display-lg-mobile md:text-display-lg text-text-primary mb-4">Drafting Center</h1>
+      <p class="text-on-surface-variant text-body-lg max-w-xl mx-auto">Polish your prose with professional-grade AI refinements.</p>
+    </header>
+
+    <form id="correct-form">
+
+      <!-- Writing canvas -->
+      <div class="glass-panel rounded-2xl p-6 mb-6 transition-shadow duration-300
+                  focus-within:shadow-[0_0_0_2px_#7c3aed,0_0_20px_rgba(124,58,237,0.4)]">
+        <!-- macOS-style traffic lights -->
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex gap-2">
+            <div class="w-2.5 h-2.5 rounded-full bg-error"></div>
+            <div class="w-2.5 h-2.5 rounded-full bg-tertiary"></div>
+            <div class="w-2.5 h-2.5 rounded-full bg-success-emerald"></div>
+          </div>
+          <span class="font-label-sm text-label-sm text-text-muted uppercase tracking-widest">Input Engine Active</span>
+        </div>
+        <textarea id="input-text"
+                  class="w-full min-h-[220px] bg-transparent border-none focus:ring-0 text-body-lg text-on-surface placeholder:text-outline-variant resize-y outline-none"
+                  placeholder="Enter or paste your text here to begin refining…"
+                  maxlength="5000" required></textarea>
+        <div class="flex justify-end pt-4 border-t border-[rgba(255,255,255,0.08)]">
+          <span class="font-label-sm text-label-sm text-text-muted">
+            <span id="char-count" aria-live="polite">0</span> / 5000
+          </span>
+        </div>
+      </div>
+
+      <!-- Tone selector (pills drive a hidden <select> so app.js needs zero changes) -->
+      <div class="mb-8">
+        <span class="block font-label-sm text-label-sm text-text-muted uppercase tracking-widest mb-4 text-center">Target Tone</span>
+        <div class="flex flex-wrap items-center justify-center gap-3">
+          <select id="tone-select" class="sr-only" aria-label="Target tone">
+            <option value="">Auto — AI picks best tone</option>
+            <option value="formal">Formal</option>
+            <option value="casual">Casual</option>
+            <option value="friendly">Friendly</option>
+            <option value="professional">Professional</option>
+          </select>
+          <button type="button" class="tone-pill active-pill px-6 py-2 rounded-full font-label-sm text-label-sm" data-tone="" onclick="setTone(this)">Auto</button>
+          <button type="button" class="tone-pill px-6 py-2 rounded-full font-label-sm text-label-sm" data-tone="formal"       onclick="setTone(this)">Formal</button>
+          <button type="button" class="tone-pill px-6 py-2 rounded-full font-label-sm text-label-sm" data-tone="casual"       onclick="setTone(this)">Casual</button>
+          <button type="button" class="tone-pill px-6 py-2 rounded-full font-label-sm text-label-sm" data-tone="friendly"     onclick="setTone(this)">Friendly</button>
+          <button type="button" class="tone-pill px-6 py-2 rounded-full font-label-sm text-label-sm" data-tone="professional" onclick="setTone(this)">Professional</button>
+        </div>
+      </div>
+
+      <!-- CTA -->
+      <div class="flex justify-center mb-6">
+        <button id="correct-btn" type="submit"
+                class="shimmer-btn px-10 py-4 rounded-xl font-sora text-headline-md text-white font-bold shadow-lg hover:scale-[1.02] active:scale-[0.98] flex items-center gap-3">
+          <span id="correct-spinner" class="d-none spin-ring"></span>
+          <span class="material-symbols-outlined icon-fill">auto_fix_high</span>
+          Correct My Writing
+        </button>
+      </div>
+    </form>
+
+    <!-- Correction error -->
+    <div id="correct-error" class="d-none mb-4 px-4 py-3 rounded-xl bg-[rgba(255,180,171,0.1)] border border-[rgba(255,180,171,0.3)] text-error text-body-md"></div>
+
+    <!-- Result card -->
+    <div id="result-card" class="d-none glass-panel rounded-2xl p-8 border border-[rgba(210,187,255,0.2)] relative overflow-hidden">
+      <div class="flex flex-wrap justify-between items-center mb-6 gap-4">
+        <h3 class="font-sora text-headline-md text-primary">Corrected Text</h3>
+        <div class="flex gap-2 flex-wrap">
+          <span id="result-detected"
+                class="px-3 py-1 rounded-full bg-surface-variant font-label-xs text-label-xs text-text-muted border border-[rgba(255,255,255,0.08)]">detected: —</span>
+          <span id="result-applied"
+                class="px-3 py-1 rounded-full bg-[rgba(124,58,237,0.2)] font-label-xs text-label-xs text-primary border border-[rgba(210,187,255,0.3)]">applied: —</span>
+        </div>
+      </div>
+      <div id="corrected-text-box"
+           class="bg-black/20 rounded-xl p-6 mb-6 text-body-lg text-on-surface leading-relaxed border-l-4 border-secondary whitespace-pre-wrap font-inter"></div>
+      <div class="flex justify-between items-start gap-4">
+        <p id="result-summary" class="text-text-muted text-body-md flex-1"></p>
+        <button id="copy-btn" type="button"
+                class="springy flex items-center gap-2 px-5 py-2.5 rounded-lg border border-[rgba(255,255,255,0.12)] hover:bg-[rgba(255,255,255,0.06)] transition-colors font-label-sm text-label-sm flex-shrink-0">
+          <span class="material-symbols-outlined text-[18px]">content_copy</span>
+          Copy
+        </button>
+      </div>
+      <div id="result-warning"
+           class="d-none mt-4 px-4 py-3 rounded-xl bg-[rgba(255,183,132,0.1)] border border-[rgba(255,183,132,0.3)] text-tertiary text-body-md"></div>
+    </div>
+  </div><!-- /tab-write -->
+
+
+  <!-- ═══════════════════════════════════════════════════
+       HISTORY TAB
+  ════════════════════════════════════════════════════ -->
+  <div id="tab-history" class="d-none max-w-[1280px] mx-auto px-4 md:px-10 py-12 pb-24 md:pb-12 relative">
+
+    <!-- Atmospheric glows -->
+    <div class="glow-history-violet absolute top-0 right-0 w-[400px] h-[400px] rounded-full pointer-events-none -z-10"></div>
+    <div class="glow-history-cyan absolute bottom-0 left-0 w-[300px] h-[300px] rounded-full pointer-events-none -z-10"></div>
+
+    <!-- Header -->
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
+      <div>
+        <h1 class="font-sora text-display-lg-mobile md:text-display-lg mb-2 tracking-tight">
+          Writing <span class="text-gradient">History</span>
+        </h1>
+        <p class="text-on-surface-variant text-body-lg">Review and manage your past AI-enhanced corrections.</p>
+      </div>
+      <button id="refresh-history-btn" type="button"
+              class="springy glass-card flex items-center gap-2 px-4 py-2 rounded-xl border border-[rgba(255,255,255,0.08)] hover:bg-[rgba(255,255,255,0.06)] font-label-sm text-label-sm self-start">
+        <span class="material-symbols-outlined">refresh</span>
+        Refresh
       </button>
     </div>
 
-    <!-- ---- WRITE TAB ---- -->
-    <div id="tab-write" role="tabpanel" aria-labelledby="main-tab-write-btn">
-      <div class="card shadow-sm">
-        <div class="card-body">
-          <form id="correct-form">
-            <div class="mb-3">
-              <label for="input-text" class="form-label fw-semibold">Your Text</label>
-              <textarea id="input-text" class="form-control" rows="7"
-                placeholder="Paste or type your text here…"
-                maxlength="5000" required></textarea>
-              <div class="form-text text-end">
-                <span id="char-count" aria-live="polite">0</span> / 5000 characters
-              </div>
-            </div>
-            <div class="row g-3 align-items-end">
-              <div class="col-sm-6">
-                <label for="tone-select" class="form-label fw-semibold">Target Tone</label>
-                <select id="tone-select" class="form-select">
-                  <option value="">Auto — AI picks best tone</option>
-                  <option value="formal">Formal</option>
-                  <option value="casual">Casual</option>
-                  <option value="friendly">Friendly</option>
-                  <option value="professional">Professional</option>
-                </select>
-              </div>
-              <div class="col-sm-6">
-                <button id="correct-btn" type="submit" class="btn btn-primary w-100">
-                  <span id="correct-spinner" class="spinner-border spinner-border-sm d-none me-1"></span>
-                  <i class="bi bi-magic me-1"></i>Correct Text
-                </button>
-              </div>
-            </div>
-          </form>
+    <!-- History items injected here by app.js -->
+    <div id="history-list" class="flex flex-col gap-4"></div>
 
-          <!-- Correction error -->
-          <div id="correct-error" class="alert alert-danger mt-3 d-none py-2 small" role="alert"></div>
+    <!-- Empty state -->
+    <div id="history-empty" class="d-none glass-card rounded-2xl p-16 text-center">
+      <span class="material-symbols-outlined text-6xl text-text-muted block mb-4">history</span>
+      <p class="text-on-surface-variant text-body-lg">
+        No corrections yet. Use the <strong class="text-primary">Write</strong> tab to get started.
+      </p>
+    </div>
 
-          <!-- Result card -->
-          <div id="result-card" class="mt-4 d-none">
-            <hr/>
-            <div class="d-flex flex-wrap justify-content-between align-items-center mb-2 gap-2">
-              <h6 class="mb-0 fw-semibold">Corrected Text</h6>
-              <div class="d-flex gap-2">
-                <span id="result-detected" class="badge bg-secondary result-tone-badge">detected: —</span>
-                <span id="result-applied"  class="badge result-tone-badge"
-                      style="background:#6366f1;">applied: —</span>
-              </div>
-            </div>
-            <div id="corrected-text-box"></div>
-            <div class="d-flex justify-content-between align-items-start mt-3 gap-2">
-              <small class="text-muted" id="result-summary"></small>
-              <button id="copy-btn" type="button" class="btn btn-sm btn-outline-secondary flex-shrink-0">
-                <i class="bi bi-clipboard me-1"></i>Copy
-              </button>
-            </div>
-            <div id="result-warning" class="alert alert-warning mt-2 py-2 small d-none"></div>
-          </div>
+    <!-- Load more -->
+    <div id="load-more-footer" class="d-none flex flex-col items-center gap-4 py-12">
+      <button id="load-more-btn" type="button"
+              class="springy px-8 py-3 rounded-full glass-card border border-[rgba(255,255,255,0.08)] font-label-sm text-label-sm tracking-widest uppercase hover:bg-[rgba(255,255,255,0.06)] transition-all">
+        Load Older Entries
+      </button>
+    </div>
+
+  </div><!-- /tab-history -->
+
+
+  <!-- ═══════════════════════════════════════════════════
+       ANALYTICS TAB
+  ════════════════════════════════════════════════════ -->
+  <div id="tab-analytics" class="d-none max-w-[1280px] mx-auto px-4 md:px-10 py-12 pb-24 md:pb-12">
+
+    <!-- Header -->
+    <header class="mb-12">
+      <span class="font-label-sm text-label-sm text-secondary tracking-widest uppercase">Performance Dashboard</span>
+      <h1 class="font-sora text-display-lg-mobile md:text-display-lg text-primary mb-2 mt-1">Writing Intelligence</h1>
+      <p class="text-on-surface-variant max-w-2xl text-body-lg">
+        Dive deep into your writing patterns. SmartWrite AI analyzes every correction to help you master your voice.
+      </p>
+    </header>
+
+    <!-- Stat cards -->
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+      <div class="glass-card glow-violet-card p-6 rounded-xl">
+        <div class="flex items-center gap-3 mb-4">
+          <span class="material-symbols-outlined text-primary text-3xl">auto_fix_high</span>
+          <h3 class="font-label-sm text-label-sm text-on-surface-variant">TOTAL CORRECTIONS</h3>
         </div>
+        <div id="stat-total" class="font-sora text-5xl text-primary tracking-tight">—</div>
       </div>
-    </div><!-- /tab-write -->
-
-    <!-- ---- HISTORY TAB ---- -->
-    <div id="tab-history" class="d-none" role="tabpanel" aria-labelledby="main-tab-history-btn">
-      <div class="card shadow-sm">
-        <div class="card-header d-flex justify-content-between align-items-center">
-          <span class="fw-semibold">Correction History</span>
-          <button id="refresh-history-btn" type="button" class="btn btn-sm btn-outline-secondary" title="Refresh">
-            <i class="bi bi-arrow-clockwise"></i>
-          </button>
+      <div class="glass-card glow-cyan-card p-6 rounded-xl">
+        <div class="flex items-center gap-3 mb-4">
+          <span class="material-symbols-outlined text-secondary text-3xl">calendar_today</span>
+          <h3 class="font-label-sm text-label-sm text-on-surface-variant">LAST 7 DAYS</h3>
         </div>
-        <div id="history-list" class="list-group list-group-flush"></div>
-        <div id="history-empty" class="card-body text-muted text-center d-none">
-          <i class="bi bi-journal-x fs-2 d-block mb-2"></i>
-          No corrections yet. Use the <strong>Write</strong> tab to get started.
-        </div>
-        <div id="load-more-footer" class="card-footer text-center d-none">
-          <button id="load-more-btn" type="button" class="btn btn-sm btn-outline-primary">Load more</button>
-        </div>
+        <div id="stat-7d" class="font-sora text-5xl text-secondary tracking-tight">—</div>
       </div>
-    </div><!-- /tab-history -->
-
-    <!-- ---- ANALYTICS TAB ---- -->
-    <div id="tab-analytics" class="d-none" role="tabpanel" aria-labelledby="main-tab-analytics-btn">
-      <!-- Stat cards -->
-      <div class="row g-3 mb-4">
-        <div class="col-sm-4">
-          <div class="card text-center shadow-sm h-100">
-            <div class="card-body py-4">
-              <div class="fs-1 fw-bold text-primary" id="stat-total">—</div>
-              <div class="text-muted small mt-1">Total Corrections</div>
-            </div>
-          </div>
+      <div class="glass-card p-6 rounded-xl">
+        <div class="flex items-center gap-3 mb-4">
+          <span class="material-symbols-outlined text-tertiary text-3xl">psychology</span>
+          <h3 class="font-label-sm text-label-sm text-on-surface-variant">MOST USED TONE</h3>
         </div>
-        <div class="col-sm-4">
-          <div class="card text-center shadow-sm h-100">
-            <div class="card-body py-4">
-              <div class="fs-1 fw-bold text-success" id="stat-7d">—</div>
-              <div class="text-muted small mt-1">Last 7 Days</div>
-            </div>
-          </div>
-        </div>
-        <div class="col-sm-4">
-          <div class="card text-center shadow-sm h-100">
-            <div class="card-body py-4">
-              <div class="fs-3 fw-bold text-capitalize" id="stat-top-tone"
-                   style="color:#6366f1;">—</div>
-              <div class="text-muted small mt-1">Most Used Tone</div>
-            </div>
-          </div>
-        </div>
+        <div id="stat-top-tone" class="font-sora text-4xl text-tertiary tracking-tight capitalize">—</div>
       </div>
-      <!-- Tone breakdown -->
-      <div class="card shadow-sm">
-        <div class="card-header fw-semibold">Corrections by Tone</div>
-        <div class="card-body" id="tone-breakdown">
-          <div class="text-center py-3">
-            <div class="spinner-border text-primary spinner-border-sm"></div>
-          </div>
-        </div>
-      </div>
-    </div><!-- /tab-analytics -->
+    </section>
 
-  </div><!-- /container -->
+    <!-- Tone breakdown (populated by app.js) -->
+    <section class="glass-card p-6 rounded-xl mb-12">
+      <div class="mb-8">
+        <h2 class="font-sora text-headline-md text-primary">Tone Breakdown</h2>
+        <p class="text-on-surface-variant text-body-md">Distribution of tones across your corrections.</p>
+      </div>
+      <div id="tone-breakdown">
+        <!-- app.js injects spinner, empty state, or bars here -->
+      </div>
+    </section>
+
+  </div><!-- /tab-analytics -->
+
 </div><!-- /app-view -->
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="./app.js" defer></script>
+
+<!-- ═══════════════════════════════════════════════════
+     INLINE SCRIPTS (run before app.js so functions exist when onclick fires)
+════════════════════════════════════════════════════ -->
+<script>
+  // ── Auth tab switching (was Bootstrap JS before) ──
+  function authSwitchTab(tab) {
+    var isLogin = tab === 'login';
+    document.getElementById('login-pane').classList.toggle('d-none', !isLogin);
+    document.getElementById('register-pane').classList.toggle('d-none', isLogin);
+    document.getElementById('login-tab-btn').classList.toggle('active', isLogin);
+    document.getElementById('register-tab-btn').classList.toggle('active', !isLogin);
+  }
+
+  // ── Tone pill → hidden select sync ──
+  function setTone(btn) {
+    document.querySelectorAll('.tone-pill').forEach(function(p){ p.classList.remove('active-pill'); });
+    btn.classList.add('active-pill');
+    document.getElementById('tone-select').value = btn.dataset.tone;
+  }
+
+  // ── Particle canvas (auth atmosphere) ──
+  var canvas = document.getElementById('particleCanvas');
+  var ctx    = canvas.getContext('2d');
+  var particles = [];
+
+  function initParticles() {
+    canvas.width  = window.innerWidth;
+    canvas.height = window.innerHeight;
+    particles = [];
+    for (var i = 0; i < 55; i++) {
+      particles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        size:   Math.random() * 2 + 0.5,
+        speedX: (Math.random() - 0.5) * 0.4,
+        speedY: (Math.random() - 0.5) * 0.4,
+        opacity: Math.random() * 0.35 + 0.05,
+      });
+    }
+  }
+
+  var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function animateParticles() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    particles.forEach(function(p) {
+      p.x += p.speedX;
+      p.y += p.speedY;
+      if (p.x < 0 || p.x > canvas.width)  p.speedX *= -1;
+      if (p.y < 0 || p.y > canvas.height) p.speedY *= -1;
+      ctx.fillStyle = 'rgba(124,58,237,' + p.opacity + ')';
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+      ctx.fill();
+    });
+    requestAnimationFrame(animateParticles);
+  }
+
+  window.addEventListener('resize', initParticles);
+  initParticles();
+  if (!reducedMotion) animateParticles();
+
+  // ── Mouse-parallax background (app view) ──
+  document.addEventListener('mousemove', function(e) {
+    if (reducedMotion) return;
+    var appView = document.getElementById('app-view');
+    if (appView && !appView.classList.contains('d-none')) {
+      var x = (e.clientX / window.innerWidth)  * 100;
+      var y = (e.clientY / window.innerHeight) * 100;
+      document.body.style.background =
+        'radial-gradient(circle at ' + x + '% ' + y + '%, #0D0D1A 0%, #12121F 60%, #1A0A2E 100%)';
+    }
+  });
+</script>
+
+<script src="./app.js"></script>
 </body>
 </html>

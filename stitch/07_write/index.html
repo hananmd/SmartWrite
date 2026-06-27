@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SmartWrite | AI Content Engine</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;family=Sora:wght@600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary": "#d2bbff",
+                        "primary-fixed": "#eaddff",
+                        "on-primary": "#3f008e",
+                        "on-tertiary-fixed": "#301400",
+                        "secondary-container": "#03b5d3",
+                        "on-tertiary": "#4f2500",
+                        "on-tertiary-container": "#ffe0cd",
+                        "success-emerald": "#10B981",
+                        "surface-container-low": "#1a1a28",
+                        "surface-dim": "#12121f",
+                        "surface-container": "#1e1e2c",
+                        "background-start": "#0D0D1A",
+                        "on-primary-fixed-variant": "#5a00c6",
+                        "inverse-surface": "#e3e0f4",
+                        "tertiary-fixed-dim": "#ffb784",
+                        "background-end": "#1A0A2E",
+                        "tertiary-container": "#a15100",
+                        "inverse-primary": "#732ee4",
+                        "surface": "#12121f",
+                        "error": "#ffb4ab",
+                        "on-primary-container": "#ede0ff",
+                        "surface-variant": "#343342",
+                        "surface-container-high": "#292937",
+                        "glass-fill": "rgba(255, 255, 255, 0.06)",
+                        "on-primary-fixed": "#25005a",
+                        "primary-container": "#7c3aed",
+                        "on-secondary-fixed": "#001f26",
+                        "on-secondary-fixed-variant": "#004e5c",
+                        "on-tertiary-fixed-variant": "#713700",
+                        "secondary": "#4cd7f6",
+                        "tertiary-fixed": "#ffdcc6",
+                        "background": "#12121f",
+                        "primary-fixed-dim": "#d2bbff",
+                        "secondary-fixed": "#acedff",
+                        "on-error": "#690005",
+                        "glass-stroke": "rgba(255, 255, 255, 0.12)",
+                        "secondary-fixed-dim": "#4cd7f6",
+                        "inverse-on-surface": "#2f2f3d",
+                        "on-background": "#e3e0f4",
+                        "on-error-container": "#ffdad6",
+                        "surface-container-highest": "#343342",
+                        "on-secondary": "#003640",
+                        "tertiary": "#ffb784",
+                        "on-secondary-container": "#00424e",
+                        "text-muted": "#9991CC",
+                        "on-surface": "#e3e0f4",
+                        "error-container": "#93000a",
+                        "surface-bright": "#383847",
+                        "surface-tint": "#d2bbff",
+                        "outline-variant": "#4a4455",
+                        "surface-container-lowest": "#0d0d1a",
+                        "on-surface-variant": "#ccc3d8",
+                        "text-primary": "#F1F0FF",
+                        "outline": "#958da1"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "container-max": "1280px",
+                        "gutter": "24px",
+                        "margin-mobile": "16px",
+                        "margin-desktop": "40px",
+                        "stack-md": "16px",
+                        "stack-lg": "32px",
+                        "stack-sm": "8px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Inter"],
+                        "headline-md": ["Sora"],
+                        "body-md": ["Inter"],
+                        "display-lg": ["Sora"],
+                        "label-xs": ["Inter"],
+                        "display-lg-mobile": ["Sora"],
+                        "label-sm": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["18px", {"lineHeight": "28px", "letterSpacing": "0em", "fontWeight": "400"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "letterSpacing": "0em", "fontWeight": "400"}],
+                        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "label-xs": ["10px", {"lineHeight": "12px", "letterSpacing": "0.15em", "fontWeight": "700"}],
+                        "display-lg-mobile": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.12em", "fontWeight": "600"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            background: radial-gradient(circle at 0% 0%, #0D0D1A 0%, #12121F 50%, #1A0A2E 100%);
+            min-height: 100vh;
+            color: #F1F0FF;
+            overflow-x: hidden;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .focus-pulse:focus-within {
+            box-shadow: 0 0 0 2px #7c3aed, 0 0 20px rgba(124, 58, 237, 0.4);
+            border-color: #7c3aed;
+        }
+        .shimmer-btn {
+            background: linear-gradient(135deg, #7c3aed 0%, #03b5d3 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        .shimmer-btn::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transform: rotate(45deg);
+            animation: shimmer 3s infinite;
+        }
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) rotate(45deg); }
+        }
+        .tone-pill.active {
+            background: rgba(124, 58, 237, 0.2);
+            border-color: #d2bbff;
+            color: #d2bbff;
+        }
+        .glow-accent {
+            filter: blur(80px);
+            opacity: 0.15;
+            pointer-events: none;
+        }
+        .writing-canvas-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body class="font-body-md text-body-md selection:bg-primary-container selection:text-on-primary-container">
+<!-- Glowing atmospheric accents -->
+<div class="fixed top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary rounded-full glow-accent"></div>
+<div class="fixed bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-secondary rounded-full glow-accent"></div>
+<!-- TopNavBar -->
+<nav class="sticky top-0 w-full bg-glass-fill backdrop-blur-3xl border-b border-glass-stroke shadow-[0_0_20px_rgba(124,58,237,0.1)] z-50">
+<div class="flex justify-between items-center px-margin-desktop py-4 max-w-container-max mx-auto">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary text-[20px]" style="font-variation-settings: 'FILL' 1;">edit_square</span>
+</div>
+<span class="font-headline-md text-headline-md font-bold text-primary">SmartWrite</span>
+</div>
+<div class="hidden md:flex items-center gap-stack-lg">
+<a class="text-secondary border-b-2 border-secondary pb-1 transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] font-body-md text-body-md" href="#">Write</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors duration-200 font-body-md text-body-md" href="#">History</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors duration-200 font-body-md text-body-md" href="#">Analytics</a>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-on-surface-variant hover:text-primary transition-colors duration-200 font-body-md text-body-md">Sign Out</button>
+<div class="w-10 h-10 rounded-full border-2 border-glass-stroke p-0.5 overflow-hidden">
+<img class="w-full h-full object-cover rounded-full" alt="A cinematic, high-resolution portrait of a futuristic digital avatar with glowing violet highlights on its skin, wearing a sleek silver collar, set against a dark, tech-infused background with soft bokeh lights in primary colors. The lighting is moody and premium, reflecting a high-end AI persona aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAzPRTVpkERy7yAV5x5ThyEz4xdJ7TzR3Q02T9LzSOLHGWoOqG3U_22AROdU7R4e6Wf29VGaecMoZJWYwsaJbho_zStj6b3HpDkbq3jR9HxQ7GOdENqF-erR5QYyb0kK7zlW7U4rihjPOrTl-1XIwvAnp1XQuVIk-p6Le3tiV9cmvsqc1434LJV2qJw2wAPbGBUWX9-8IHaP_h99yT729LSLX62uy3DuFWnEetvx1Nz7FZWB9k2PKyRsT0TyqagwS7zmUtE9s1Nk0PC"/>
+</div>
+</div>
+</div>
+</nav>
+<!-- SideNavBar (Hidden on main write canvas context as per instructions for focus) -->
+<main class="relative px-margin-mobile md:px-margin-desktop py-12">
+<div class="writing-canvas-container">
+<!-- Header Section -->
+<header class="mb-10 text-center">
+<h1 class="font-display-lg text-display-lg-mobile md:text-display-lg mb-4 text-text-primary">Drafting Center</h1>
+<p class="text-on-surface-variant font-body-lg max-w-xl mx-auto">Polish your prose with professional-grade AI refinements.</p>
+</header>
+<!-- Main Writing Area -->
+<div class="glass-panel rounded-xl p-6 focus-pulse group mb-stack-lg">
+<div class="flex items-center justify-between mb-4">
+<div class="flex gap-2">
+<div class="w-2 h-2 rounded-full bg-error"></div>
+<div class="w-2 h-2 rounded-full bg-tertiary"></div>
+<div class="w-2 h-2 rounded-full bg-success-emerald"></div>
+</div>
+<span class="font-label-sm text-label-sm text-text-muted uppercase tracking-widest">Input Engine Active</span>
+</div>
+<textarea class="w-full h-[614px] bg-transparent border-none focus:ring-0 text-body-lg font-body-lg text-on-surface placeholder:text-outline-variant resize-none" placeholder="Enter or paste your text here to begin refining..."></textarea>
+<div class="flex justify-end pt-4 border-t border-glass-stroke">
+<span class="text-label-sm font-label-sm text-text-muted">Character count: <span id="char-count">0</span></span>
+</div>
+</div>
+<!-- Tone Selector Row -->
+<div class="flex flex-wrap items-center justify-center gap-stack-md mb-stack-lg">
+<span class="text-label-sm font-label-sm text-text-muted uppercase tracking-widest mr-2">Style:</span>
+<button class="tone-pill active px-6 py-2 rounded-full glass-panel font-label-sm text-label-sm transition-all hover:border-primary" onclick="selectTone(this)">Formal</button>
+<button class="tone-pill px-6 py-2 rounded-full glass-panel font-label-sm text-label-sm transition-all hover:border-primary" onclick="selectTone(this)">Casual</button>
+<button class="tone-pill px-6 py-2 rounded-full glass-panel font-label-sm text-label-sm transition-all hover:border-primary" onclick="selectTone(this)">Friendly</button>
+<button class="tone-pill px-6 py-2 rounded-full glass-panel font-label-sm text-label-sm transition-all hover:border-primary" onclick="selectTone(this)">Professional</button>
+</div>
+<!-- CTA Button -->
+<div class="flex justify-center mb-stack-lg">
+<button class="shimmer-btn px-10 py-4 rounded-xl font-headline-md text-headline-md text-white shadow-lg active:scale-95 transition-transform duration-200 flex items-center gap-3" id="refine-btn">
+<span class="material-symbols-outlined">auto_fix_high</span>
+                    Correct my writing
+                </button>
+</div>
+<!-- Result Card (Initially hidden or slides up) -->
+<div class="hidden glass-panel rounded-xl p-8 border-primary/30 relative overflow-hidden transition-all duration-700 transform translate-y-8 opacity-0" id="result-card">
+<div class="absolute top-0 right-0 p-4">
+<span class="bg-primary/20 text-primary border border-primary/30 px-3 py-1 rounded-full font-label-sm text-label-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">check_circle</span>
+                        Refined Formal
+                    </span>
+</div>
+<h3 class="font-headline-md text-headline-md text-primary mb-4">Refinement Preview</h3>
+<div class="bg-black/20 rounded-lg p-6 mb-6 font-body-lg text-on-surface leading-relaxed italic border-l-4 border-secondary">
+                    "This draft has been enhanced for professional clarity and engagement while maintaining your original voice. The suggested adjustments focus on structural flow and precise vocabulary choices."
+                </div>
+<div class="flex justify-end gap-stack-md">
+<button class="flex items-center gap-2 px-6 py-3 rounded-lg border border-glass-stroke hover:bg-glass-fill transition-colors text-label-sm font-label-sm">
+<span class="material-symbols-outlined">refresh</span>
+                        Regenerate
+                    </button>
+<button class="flex items-center gap-2 px-6 py-3 rounded-lg bg-secondary-container text-on-secondary-container hover:brightness-110 transition-all text-label-sm font-label-sm">
+<span class="material-symbols-outlined">content_copy</span>
+                        Copy Result
+                    </button>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer atmospheric element -->
+<div class="h-32"></div>
+<script>
+        // Character count logic
+        const textarea = document.querySelector('textarea');
+        const charCount = document.getElementById('char-count');
+        textarea.addEventListener('input', () => {
+            charCount.textContent = textarea.value.length;
+        });
+
+        // Tone selection toggle
+        function selectTone(btn) {
+            document.querySelectorAll('.tone-pill').forEach(p => p.classList.remove('active'));
+            btn.classList.add('active');
+        }
+
+        // Action logic with animation
+        const refineBtn = document.getElementById('refine-btn');
+        const resultCard = document.getElementById('result-card');
+
+        refineBtn.addEventListener('click', () => {
+            refineBtn.innerHTML = `
+                <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Processing AI...
+            `;
+
+            setTimeout(() => {
+                refineBtn.innerHTML = `
+                    <span class="material-symbols-outlined">auto_fix_high</span>
+                    Correct my writing
+                `;
+                resultCard.classList.remove('hidden');
+                setTimeout(() => {
+                    resultCard.classList.remove('translate-y-8', 'opacity-0');
+                    resultCard.classList.add('translate-y-0', 'opacity-100');
+                }, 50);
+                
+                // Scroll to result
+                resultCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 1500);
+        });
+    </script>
+</body></html>
